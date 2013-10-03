@@ -1,0 +1,163 @@
+% Compile with xelatex only.
+% For bibliography, use biber
+%
+\documentclass[a5paper,10pt, oneside, titlepage, numbers=endperiod]{scrbook}
+%\documentclass[a4paper,10pt,twoside,titlepage]{book} % swap for latex2rtf
+
+\def \documentversion {0.5} % increment and don't forget to update history.tex
+
+% A switch to change between document rendering options
+ \usepackage{etoolbox}
+ \newtoggle{webpaper}
+% \toggletrue{webpaper}
+\togglefalse{webpaper}
+
+\usepackage[top=1.5cm, bottom=2.2cm, left=1.84cm, right=1.5cm, footskip=1cm]{geometry}
+\usepackage{fontspec}
+%\usepackage[utf8]{inputenc} % uncomment for latex2rtf 
+
+\usepackage{ctable}  
+\usepackage{caption}
+\DeclareCaptionFormat{myformat}{\hfill#1#2\\ \bfseries#3}
+\captionsetup[table]{justification=centering, singlelinecheck=off, format=myformat, labelformat = simple} % Ugly hack to remove prefix "table"
+
+% \parindent=1.5cm
+
+\usepackage{xunicode} % some extra unicode support
+\usepackage{xltxtra}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+
+\usepackage{csquotes}
+
+\usepackage{polyglossia}
+\defaultfontfeatures{Scale=MatchLowercase, Mapping=tex-text}
+\usepackage{soul}
+
+\newfontfamily\russianfont{CMU Serif}
+\setromanfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+\setmonofont{CMU Typewriter Text}
+
+\setdefaultlanguage[spelling=modern]{russian}
+\setotherlanguage{english}
+
+\newcommand{\abbr}{\textit{англ.}\ }
+\newcommand{\todo}{{\color{red}TODO}\ }
+\usepackage{graphicx}
+\graphicspath{{./images/}} % Путь к папке, содержащей рисунки
+
+\tolerance=9999 % let the text underfull be ugly as hell, nobody cares.
+\emergencystretch=3em
+\footskip=1.2cm
+
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, filecolor=black, citecolor=black, urlcolor=black , pdfauthor=Evgeny Yulyugin, pdftitle=Лабораторный проктикум по программному моделированию}
+
+\usepackage{footnpag}
+\usepackage{indentfirst}
+\usepackage{underscore}
+\usepackage{longtable} 
+\usepackage{url}
+
+\usepackage{listings}
+\lstset{basicstyle=\footnotesize\ttfamily, breaklines=true, keepspaces=true }
+
+\iftoggle{webpaper}{
+    % bibliography settings to put one after each chapter
+    \usepackage[language=auto, bibencoding=inputenc, style=gost-numeric, backend=biber, maxnames=4, refsection=chapter]{biblatex}
+} {
+    % bibliography settings to put one global at the end
+    \usepackage[language=auto, bibencoding=inputenc, style=gost-numeric, backend=biber, maxnames=4]{biblatex}
+}
+
+\usepackage[subfigure]{tocloft}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % To set dots between chapter description and numbers
+\setlength{\cftaftertoctitleskip}{20pt}
+
+\usepackage{tabularx}
+
+\usepackage{nameref}
+\usepackage{amsthm}
+\usepackage{enumitem} % continue enumeration 
+\usepackage{subfigure}
+\usepackage{mdwlist} % compact itemize lists environment
+\usepackage{appendix}
+\renewcommand{\appendixname}{Приложения}
+\renewcommand{\appendixtocname}{Приложения}
+\renewcommand{\appendixpagename}{Приложения}
+\let\plainappendixpage\appendixpage
+\makeatletter
+\renewcommand{\appendixpage}{% Delete page number in appendixpage
+  \begingroup
+  \let\ps@plain\ps@empty
+  \plainappendixpage
+  \endgroup}
+\makeatother
+
+\renewcommand{\dictumwidth}{0.5\textwidth}
+\newcommand{\dictumtext}{\normalfont\normalcolor\sffamily\tiny}
+\setcounter{tocdepth}{2}
+
+%\usepackage{draftwatermark}
+%\SetWatermarkFontSize{35.83pt}
+%\SetWatermarkScale{3.0}
+
+\addbibresource{./practicum.bib}
+\renewcommand*{\multicitedelim}{\addcomma\space} % grouped cites separated by commas not semicolons
+
+\addtokomafont{caption}{\small}
+\renewcommand{\captionformat}{~} % do not put colon after figures numbers
+
+\setkomafont{pagenumber}{\normalfont\rmfamily} % fix KOMA bug when footer/header inherits font settings from main text.
+
+\usepackage{setspace}
+
+\typeout{Copyright 2012, 2013 Grigory Rechistov and Evgeny Yulyugin.}
+\begin{document}
+
+\iftoggle{webpaper}{
+    \include{title}
+} {
+    \include{title-print}
+    \include{backside}
+}
+
+\begingroup
+\setstretch{0.8}
+\renewcommand\contentsname{Содержание}
+\setcounter{tocdepth}{1}
+\tableofcontents
+\endgroup
+
+\include{contrib}
+
+% Don't show number of chapter in overview
+\renewcommand{\thefigure}{\arabic{figure}}
+\renewcommand{\thesection}{\arabic{section}}
+
+\include{overview}
+
+\renewcommand{\thefigure}{\thechapter.\arabic{figure}}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+
+\include{lab01}
+
+\include{lab02}
+
+\include{lab03}
+
+\include{lab04}
+
+\include{appendix}
+
+\iftoggle{webpaper}{
+    % Nothing for the web version
+    % bibliography is already in place
+} {
+    \include{literature}
+    \include{lastpage}
+}
+
+\end{document}
