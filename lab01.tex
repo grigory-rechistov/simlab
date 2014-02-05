@@ -309,14 +309,16 @@ busybox login:
 
 Введите в него \texttt{root}, нажмите \textbf{Enter}. Теперь операционная система загружена, и вы можете начать взаимодействовать с ней, например, вводить команды в командной строке.
 
-\paragraph{Получить листинг корневой директории}
+\paragraph{Получить листинг корневой директории.} Пример вывода команды \texttt{ls}:
+
 \begin{lstlisting}
 # ls /
 bin      etc      host     linuxrc  root     sys
 dev      home     init     proc     sbin     var
 \end{lstlisting}
 
-\paragraph{Увидеть информацию о моделируемом процессоре}
+\paragraph{Увидеть информацию о моделируемом процессоре.} Пример содержимого псевдофайла \texttt{cpuinfo}:
+
 \begin{lstlisting}
 # cat /proc/cpuinfo 
 processor       : 0

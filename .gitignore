@@ -1,0 +1,11 @@
+*.aux
+*.log
+*.bcf
+*.blg
+*.out
+
+practicum.fot
+practicum.run.xml
+practicum.synctex.gz
+practicum.toc
+

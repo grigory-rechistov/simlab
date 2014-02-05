@@ -1,0 +1,40 @@
+\chapter{Скрипт для отладки}\label{chap:app-broken-script}
+
+\begin{lstlisting}
+name_prefix = cli.simenv.host_name
+if name_prefix != "":
+    name_prefix = name_prefix + "_"
+
+sample_risc0 = pre_conf_object(name_prefix + "sample_risc0", "sample-risc")
+sample_risc0.queue = sample_risc0
+
+ram_image0 = pre_conf_object(name_prefix + "ram_image0", "image")
+ram_image0.queue = sample_risc0
+ram_image0.size = 0x800000
+
+ram0 = pre_conf_object(name_prefix + "ram0", "ram")
+ram0.image = ram_image0
+
+phys_mem0 = pre_conf_object(name_prefix + "phys_mem0", "memory-space")
+phys_mem0.queue = sample_risc0
+phys_mem0.map = [[     0x0, ram0,                 0, 0, 0x800000],
+                ]
+
+ctx0 = pre_conf_object(name_prefix + "ctx0", "context")
+ctx0.queue = sample_risc0
+
+sample_core0 = pre_conf_object(name_prefix + "sample_core0", "sample-risc-core")
+sample_core0.queue = sample_risc0
+sample_core0.sample_risc = sample_risc0
+sample_core0.physical_memory_space = phys_mem0
+sample_core0.current_context = ctx0
+
+#cosim_cell = pre_conf_object(name_prefix + "cosim_cell", "cell")
+#cosim_cell.current_processor = sample_core0
+#cosim_cell.current_step_obj = sample_risc0
+#cosim_cell.current_cycle_obj = sample_risc0
+#cosim_cell.scheduled_object = sample_risc0
+#sample_risc0.cell = cosim_cell
+
+SIM_add_configuration([sample_risc0, ctx0, ram_image0, ram0, phys_mem0, sample_core0, sample_core1], None)
+\end{lstlisting}

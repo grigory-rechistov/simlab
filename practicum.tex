@@ -1,19 +1,20 @@
 % Compile with xelatex only.
 % For bibliography, use biber
 %
-\documentclass[a5paper,10pt, oneside, titlepage, numbers=endperiod]{scrbook}
-%\documentclass[a4paper,10pt,twoside,titlepage]{book} % swap for latex2rtf
+\documentclass[a5paper, 11pt, oneside, titlepage, numbers=endperiod]{scrbook}
+%\documentclass[a4paper, 10pt,twoside,titlepage]{book} % swap for latex2rtf
 
-\def \documentversion {0.5} % increment and don't forget to update history.tex
+\def \documentversion {1.1β} % increment and don't forget to update history.tex
 
 % A switch to change between document rendering options
- \usepackage{etoolbox}
- \newtoggle{webpaper}
-% \toggletrue{webpaper}
-\togglefalse{webpaper}
+\usepackage{etoolbox}
+\newtoggle{webpaper}
+\toggletrue{webpaper}
+%\togglefalse{webpaper}
 
 \usepackage[top=1.5cm, bottom=2.2cm, left=1.84cm, right=1.5cm, footskip=1cm]{geometry}
-\usepackage{fontspec}
+\footskip=1.2cm
+
 %\usepackage[utf8]{inputenc} % uncomment for latex2rtf 
 
 \usepackage{ctable}  
@@ -21,25 +22,21 @@
 \DeclareCaptionFormat{myformat}{\hfill#1#2\\ \bfseries#3}
 \captionsetup[table]{justification=centering, singlelinecheck=off, format=myformat, labelformat = simple} % Ugly hack to remove prefix "table"
 
-% \parindent=1.5cm
-
-\usepackage{xunicode} % some extra unicode support
-\usepackage{xltxtra}
-
 \usepackage{amsfonts}
 \usepackage{amsmath}
 
 \usepackage{csquotes}
 
 \usepackage{polyglossia}
-\defaultfontfeatures{Scale=MatchLowercase, Mapping=tex-text}
-\usepackage{soul}
 
+\usepackage{fontspec}
+\defaultfontfeatures{Scale=MatchLowercase, Mapping=tex-text}
 \newfontfamily\russianfont{CMU Serif}
 \setromanfont{CMU Serif}
 \setsansfont{CMU Sans Serif}
 \setmonofont{CMU Typewriter Text}
 
+\usepackage{xltxtra} % must be after fontspec
 \setdefaultlanguage[spelling=modern]{russian}
 \setotherlanguage{english}
 
@@ -49,11 +46,12 @@
 \graphicspath{{./images/}} % Путь к папке, содержащей рисунки
 
 \tolerance=9999 % let the text underfull be ugly as hell, nobody cares.
+\widowpenalty=9998 % try to avoid widow lines
+\clubpenalty=9998 % try to avoid orphan lines
 \emergencystretch=3em
-\footskip=1.2cm
 
 \usepackage{hyperref}
-\hypersetup{colorlinks=true, linkcolor=black, filecolor=black, citecolor=black, urlcolor=black , pdfauthor=Evgeny Yulyugin, pdftitle=Лабораторный проктикум по программному моделированию}
+\hypersetup{colorlinks=true, linkcolor=black, filecolor=black, citecolor=black, urlcolor=black , pdfauthor=Evgeny Yulyugin and Grigory Rechistov, pdftitle=Лабораторный практикум по программному моделированию}
 
 \usepackage{footnpag}
 \usepackage{indentfirst}
@@ -100,9 +98,9 @@
 \newcommand{\dictumtext}{\normalfont\normalcolor\sffamily\tiny}
 \setcounter{tocdepth}{2}
 
-%\usepackage{draftwatermark}
-%\SetWatermarkFontSize{35.83pt}
-%\SetWatermarkScale{3.0}
+\usepackage{draftwatermark}
+\SetWatermarkFontSize{35.83pt}
+\SetWatermarkScale{3.0}
 
 \addbibresource{./practicum.bib}
 \renewcommand*{\multicitedelim}{\addcomma\space} % grouped cites separated by commas not semicolons
@@ -114,7 +112,7 @@
 
 \usepackage{setspace}
 
-\typeout{Copyright 2012, 2013 Grigory Rechistov and Evgeny Yulyugin.}
+\typeout{Copyright 2012, 2013, 2014 Grigory Rechistov and Evgeny Yulyugin.}
 \begin{document}
 
 \iftoggle{webpaper}{
@@ -150,11 +148,16 @@
 
 \include{lab04}
 
-\include{appendix}
+\appendix
+\appendixpage
+
+\include{simics-guide}
+\include{app-broken-script}
+\include{target-script}
+\include{debug-example}
 
 \iftoggle{webpaper}{
-    % Nothing for the web version
-    % bibliography is already in place
+    \include{todo}
 } {
     \include{literature}
     \include{lastpage}

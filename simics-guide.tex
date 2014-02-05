@@ -1,0 +1,74 @@
+\chapter{Дополнительная информация по работе с~Simics} \label{chap:append01}
+
+В данное приложение включены сведения о различных приёмах, используемых при ежедневном использовании Simics, не описанные в главах, посвящённых индивидуальным лабораторным работам.
+
+\section{Обновление workspace}
+
+Для получения последних исправлений ошибок в моделях необходимо использовать самую свежую версию базового пакета Simics из  установленных на кластере. Номер версии определить по файлам, установленным в папке \texttt{/share/simics/simics-4.6/}. В тексте данной работы последней версией будет считаться \textbf{4.6.32}, при этом 4.6 --- это основная версия, а последняя цифра --- номер минорной версии обновления. Он будет использован позже.
+
+Каждая копия workspace характеризуется версиями пакетов, в ней используемых. Номер пакета Simics Base определяет настройки версий остальных пакетов, установленных одновременно с ним. Для того чтобы увидеть список пакетов с их версиями, используйте команду:
+
+\begin{lstlisting}
+$ ./simics -v
+Simics Base                                        1000    4.6.32    (4051)
+Model Library: Intel Core i7 with X58 and ICH10    2075    4.6.21    (4051)
+Model Builder                                      1010    4.6.14    (4051)
+Extension Builder                                  1012    4.6.6     (4042)
+\end{lstlisting}
+
+В примере сверху базовый пакет имеет версию 4.6.32. Новые пакеты будут периодически ставиться на кластере для исправления ошибок в базовых моделях. Для обновления своего workspace используйте команду \texttt{workspace-setup}, находящуюся внутри новой версии базового пакета (версии 4.6.\textbf{<minor>}), выполненную внутри workspace, который вы хотите обновить.
+
+\begin{lstlisting}
+$ /share/simics/simics-4.6/simics-4.6.<minor>/bin/workspace-setup
+\end{lstlisting}
+
+Также версию Simics можно узнать прямо изнутри симуляции:
+
+\begin{lstlisting}
+simics> version
+\end{lstlisting}
+
+\section{Список часто используемых команд Simics}
+
+\begin{center}
+\begin{tabularx}{\textwidth}{|X|X|p{0.4\textwidth}|}\hline
+%\begin{longtable}{|p{0.3\textwidth}|l|p{0.3\textwidth}|}\hline
+\textbf{Команда}                          & \textbf{Синонимы}  & \textbf{Выполняемая функция}\\\hline
+\texttt{continue}                         & \texttt{c, r, run} & Начать или продолжить симуляцию\\\hline
+\texttt{stop}     						  &                    & Остановить симуляцию\\\hline
+\texttt{step-cycle [count]}				  & \texttt{sc}		   & Исполнить count циклов, печатаю следующую инструкцию\\\hline
+\texttt{exit}     						  & \texttt{quit, q}   & Выйти из симулятора\\\hline
+\texttt{run-command-file <script.simics>} &                    & Выполнить скрипт Simics\\\hline
+\texttt{pregs [-all]}                     &                    & Распечатать содержимое регистров текущего процессора\\\hline
+\texttt{print-time [-all]}                & \texttt{ptime}     & Вывести значение виртуального времени процессора\\\hline
+\texttt{help <command>}                   & \texttt{h, man}    & Вывести справку о команде или понятии \\\hline
+\texttt{win-help}                         &                    & Открыть окно индексируемой справки \\\hline
+\texttt{win-control}                      &                    & Открыть окно \textbf{Simics Control}\\\hline
+\texttt{\%<register name>}                & \texttt{read-reg, write-reg} & Прочитать или записать содержимое регистра текущего процессора \\\hline
+\texttt{output-radix <10|16>}             &                    & Изменить основание используемой для вывода чисел системы счисления\\\hline
+\texttt{delete [id]}                      &                    & Удалить точку останова по её номеру \\\hline
+\end{tabularx}
+
+% \end{longtable}
+\end{center}
+
+\section{Лицензия Simics}{Получение лицензии и настройка лицензионного сервера Simics}
+
+\todo Написать
+
+<<Wind River Simics Installation Guide>>, глава 10. 
+
+\subsection{Получение файла лицензии}
+
+\todo Написать
+Пример содержимого файла:
+\todo Написать
+
+\subsection{Настройка лицензионного сервера}
+\todo Написать
+
+\subsection{Решение проблем с конфигурацией}
+\todo Написать
+
+
+

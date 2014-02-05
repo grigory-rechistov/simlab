@@ -1,0 +1,98 @@
+\chapter{Код целевого скрипта practicum.simics}\label{chap:target-script}
+
+\begin{lstlisting}
+# Script for mipt practicum
+load-module pci-components
+load-module std-components
+load-module x86-comp
+load-module x86-nehalem-comp
+load-module x58-ich10-comp
+load-module memory-comp
+
+add-directory "%simics%/targets/x86-x58-ich10/images/"
+
+$disk_image         = "/share_debian/hpc-images/debian-master-2012-05-12.craff"
+$cpu_class          = core-i7-single
+$freq_mhz           = 3300
+$cpi                = 1
+$disk_size          = 20496236544
+$rtc_time           = "2008-06-05 23:52:01 UTC"
+$memory_megs        = 2048
+$text_console       = TURE
+$use_acpi           = TRUE
+$gpu                = "accel-vga"
+$bios               = "seabios-simics-x58-ich10-0.6.0-20110324.bin"
+$break_on_reboot    = TRUE
+$apic_freq_mhz      = 133
+$use_vmp            = TRUE
+$spi_flash          = "spi-flash.bin"
+$mac_address        = "00:19:A0:E1:1C:9F"
+$host_name          = "practicum"
+
+$system = (create-x86-chassis name = $host_name)
+
+### motherboard
+$motherboard = (create-motherboard-x58-ich10 $system.mb
+        rtc_time = $rtc_time
+        acpi = $use_acpi
+        break_on_reboot = $break_on_reboot
+        bios = $bios
+	    mac_address = $mac_address
+        spi_flash = $spi_flash)
+$southbridge = $motherboard.sb
+$northbridge = $motherboard.nb
+
+### processor
+$create_processor = "create-processor-" + $cpu_class
+$create_processor_command = (
+        $create_processor
+        + " $motherboard.cpu0"
+        + " freq_mhz = $freq_mhz"
+        + " apic_freq_mhz = $apic_freq_mhz"
+        + " use_vmp = $use_vmp"
+        + " cpi = $cpi")
+$cpu0 = (exec $create_processor_command)
+connect $motherboard.socket[0] $cpu0.socket
+
+### memory
+$dimm = (create-simple-memory-module $motherboard.memory
+                                      memory_megs = $memory_megs)
+connect $motherboard.dimm[0] $dimm.mem_bus
+
+### GPU
+$vga = (create-pci-accel-vga $motherboard.gpu)
+connect $northbridge.gpu $vga.connector_pci_bus
+
+### consoles
+$console = (create-std-text-graphics-console $system.console)
+$console.connect keyboard $southbridge
+$console.connect $vga
+
+### disk
+if not (lookup-file $disk_image) {
+    interrupt-script "Disk image file not found: " + $disk_image
+}
+$disk = (create-std-ide-disk $system.disk size = $disk_size file = $disk_image)
+$southbridge.connect "ide_slot[0]" $disk
+
+instantiate-components
+
+#SimicsFS support (add SimicsFS pseudo device)
+$hostfs = python "SIM_create_object('hostfs', 'hfs0', [])"
+practicum.mb.phys_mem.add-map $hostfs 0xfed2_0000 16
+
+try {
+    win-command-line
+} except { echo "Failed to create GUI"}
+
+script-branch { # Automatize GRUB and login
+    local $con = $host_name.console.con
+    $con.wait-for-string "automatically in 5s"
+    $con.input "\n"
+    $con.wait-for-string "login:"
+    $con.input "user\n"
+    $con.wait-for-string "Password:"
+    $con.input "user\n"
+}
+
+\end{lstlisting}

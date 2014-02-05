@@ -1,0 +1,44 @@
+\chapter{Программа debug_example.c}\label{chap:debug-example}
+
+\begin{lstlisting}
+/*
+ * This program  reads input and converts it to uppercase.
+ * It has an intentional bug included that makes it crash on certain inputs.
+ * 
+ * Usage: stdin - input string.
+ * Compile with gcc -static -g debug_example.c -o debug_example
+ */
+	
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void read_input(char* in) {
+    char symbol;
+    in[0] = 0; // initialize the string with zero length
+    while((symbol = getchar()) != EOF) {
+        *in++ = symbol;
+    }
+    *in = 0; // close the string
+}
+
+void convert_to_uppercase(char * in, char *out) {
+    int i;
+    for (i =0; i <= strlen(in); i++) {
+        if (isalpha(in[i]))
+            out[i] = toupper(in[i]);
+        else
+            out[i] = in[i];
+    }
+}
+
+int main(int argc, char** argv) {
+    char input[32], *output;
+    
+    read_input(input);
+    convert_to_uppercase(input, output);
+    
+    printf("%s\n", output);
+    return 0;
+}
+\end{lstlisting}
