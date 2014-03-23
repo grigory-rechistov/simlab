@@ -4,13 +4,13 @@
 \documentclass[a5paper,10pt, oneside, titlepage, numbers=endperiod]{scrbook}
 %\documentclass[a4paper,10pt,twoside,titlepage]{book} % swap for latex2rtf
 
-\def \documentversion {0.5} % increment and don't forget to update history.tex
+\def \documentversion {1.1}
 
 % A switch to change between document rendering options
  \usepackage{etoolbox}
  \newtoggle{webpaper}
-% \toggletrue{webpaper}
-\togglefalse{webpaper}
+\toggletrue{webpaper}
+%\togglefalse{webpaper}
 
 \usepackage[top=1.5cm, bottom=2.2cm, left=1.84cm, right=1.5cm, footskip=1cm]{geometry}
 \usepackage{fontspec}
@@ -114,7 +114,7 @@
 
 \usepackage{setspace}
 
-\typeout{Copyright 2012, 2013 Grigory Rechistov and Evgeny Yulyugin.}
+\typeout{Copyright 2012, 2013, 2014 Grigory Rechistov and Evgeny Yulyugin.}
 \begin{document}
 
 \iftoggle{webpaper}{
