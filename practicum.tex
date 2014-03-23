@@ -4,7 +4,7 @@
 \documentclass[a5paper,10pt, oneside, titlepage, numbers=endperiod]{scrbook}
 %\documentclass[a4paper,10pt,twoside,titlepage]{book} % swap for latex2rtf
 
-\def \documentversion {1.1}
+\def \documentversion {1.1$\beta$}
 
 % A switch to change between document rendering options
  \usepackage{etoolbox}
@@ -21,7 +21,8 @@
 \DeclareCaptionFormat{myformat}{\hfill#1#2\\ \bfseries#3}
 \captionsetup[table]{justification=centering, singlelinecheck=off, format=myformat, labelformat = simple} % Ugly hack to remove prefix "table"
 
-% \parindent=1.5cm
+\usepackage{tikz}
+\usetikzlibrary{shapes, calc, arrows, fit, positioning, decorations, patterns, decorations.pathreplacing, chains, snakes}
 
 \usepackage{xunicode} % some extra unicode support
 \usepackage{xltxtra}
@@ -151,6 +152,8 @@
 \include{lab04}
 
 \include{appendix}
+
+\include{installation}
 
 \iftoggle{webpaper}{
     % Nothing for the web version

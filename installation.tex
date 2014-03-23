@@ -1,0 +1,188 @@
+\chapter{Установка и лицензирование Simics} \label{chap:installation-notes}
+
+В данное приложение включена информация по лицензированию и установке Simics в учебной лаборатории. Наиболее полная информация по данному вопросу содержится в документе «Simics Installation Guide», который идёт в поставке с пакетами Simics.
+
+Приводимые ниже инструкции были собраны для Simics версии 4.6 для хозяйской системы Linux 64 бит, рекомендуемой для всех пользователей. Для ОС Linux 32 бит инструкции изменяются незначительно; для ОС Windows они применимы после учёта особенностей графического процесса инсталляции.
+
+\section{Академическая программа Wind River Simics}
+
+\todo
+
+\section{Получение и продление лицензии}
+
+\todo
+
+\subsection{Условия предоставления}
+
+Использование Simics по академической программе должно строго соответствовать условиям соглашения, т.е. быть ограничено учебной и/или некоммерческой научно-исследовательской деятельностью. В случае возникновения необходимости проведения коммерческих исследований или разработок необходимо обратиться к представителям Wind River для получения нового соглашения и типа лицензии.
+
+Держатель лицензии обязан донести эту информацию до всех пользователей инсталляции и контролировать выполнение ими условий соглашения, в том числе с помощью административных и технических мер.
+
+\todo ограничения файервола
+\todo Порты
+
+\section{Установка пакетов Simics}
+
+Каждый пакет --- это файл с именем вида \todo{}. 
+
+Ключи шифрования получите у спонсора вашей академической программы.
+
+\begin{enumerate}
+    \item Разархивируйте все пакеты во временую директорию:
+    
+    
+    \item Запустите скрипт установки
+    
+    
+    \item Ответьте на вопросы
+    
+    \item При запросе файла с лицензией пропустите шаг
+    
+    \item 
+\end{enumerate}
+
+Проверьте указанную при установке директорию --- в ней должны находиться подпапки с файлами Simics.
+
+\subsection{Получение lmhostid}
+
+Для получения файла лицензии необходимо сгенерировать и передать число, так называемый lmhostid
+
+\paragraph{Об именовании сетевых интерфейсов.} На момент написания данного материала утилиты из состава Simics не поддерживали получение корректного lmhostid на системах, использующих схему «стабильного именования» сетевых интерфейсов. Вместо традиционных для Linux имён \texttt{eth0}, \texttt{eth1} и т.д. сетевым картам выдаются имена, зависящие от производителя и физического расположения в системе.
+
+Для обеспечения \todo
+
+\begin{enumerate}
+    \item Установите пакет \texttt{lsb-core} на системе. Для Debian и Ubuntu это выполняется командой 
+    
+    \texttt{\# apt-get install lsb-core}
+    
+    
+    \item Установите пакеты Simics. При запросе лицензии не указывайте ничего.
+    
+    \item Для получения lmhostid на сервере, \textit{который будет использоваться для запуска демона лицензий}, выполните команду:
+\end{enumerate}
+
+
+Возможные решения:
+
+
+
+\todo{Команда}
+
+\subsection{Заполнение заявки}
+
+
+
+
+\section{Настройка сервера лицензий}
+
+
+\subsection{Файл лицензии}
+
+Получаемый от производителя файл лицензии --- это текстовый документ, содержащий информацию о сроке действия, ограничениях количества одновременно запускаемых копий и поддерживаемых расширениях приложения. Пример содержимого для начала этого файла:
+
+\begin{lstlisting}
+# Simics 4.6 licence for the Simics Academic Program
+#
+# University:        Moscow Institute of Physics and Technology
+# Contact:           academic.contact@university.edu
+# Sponsor:           sponsor.contact@sponsor.com
+# Licensing Contact: licencing.contact@licencer.com
+#
+SERVER  lic.university.edu lmhostid
+VENDOR simics /home/Incoming/simics-4.6/simics-4.6.100/flexnet/linux64/bin
+#
+FEATURE simics simics 4.6 28-feb-2014 50 BD47D265FA68 \
+        VENDOR_STRING=intel;academic HOSTID=ANY BORROW TS_OK \
+        SIGN="0441 6AFA 450C BDBE E4D7 E125 1042 EEFF 04B5 767A ABCD \
+        5088 80DB D912 292E 4FD5 22DD 22D0 D55F 5B25 4818"
+<...>
+\end{lstlisting}
+
+Не изменяйте никаких строчек этого файла, кроме имени сервера лицензий. Сохраните копию файла в надёжном месте. Запишите дату окончания действия лицензии для последующей своевременной инициации процедуры обновления.
+
+\subsection{Запуск сервера}
+
+\subsection{Проверка работоспособности}
+
+
+
+\section{Расположение файлов и сервера лицензий при подключении по сети}
+
+По умолчанию все файлы Simics размещаются в директории \texttt{/opt/simics}. Если необходимо обеспечить запуск симулятора на нескольких компьютерах, подсоединённых по сети, рекомендуется разместить эти файлы установки в файловой системе, доступной по сети, например, по протоколам NFS или CIFS. Таким образом, клиентские машины смогут переиспользовать структуру инсталляции без необходимости её копирования на локальные диски, что упростит поддержку и обновления. Настройка сетевой файловой системы выходит за рамки данного руководства; необходимую информацию можно найти, например, в~\cite{nfs}.
+
+\subsection{Финальный вид инсталляции}
+
+На рис.~\ref{fig:install-overview} приведена рекомендуемая схема соединения систем и расположения служб для работы Simics на всех компьютерах учебного класса или лаборатории. В данном примере сервер для запуска демона лицензий отделён от сервера общих файлов; на практике они могут быть одной и той же системой.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=latex, font=\small]
+    
+    \node[draw] (lic-file) {simics-00AA-2014.lic};
+    \node[draw, below = 0.25cm of lic-file] (lmgrd) {lmgrd демон};
+    \node[above = 0.25cm of lic-file] (lic-host) {lic.university.edu};
+    \node[draw, fit = (lic-file) (lmgrd) (lic-host)] (lic-server) {};    
+    
+    \node[draw, below = 2cm of lic-server] (installation) {/opt/simics/...};
+    \node[draw, below = 0.25cm of installation] (nfs) {NFS демон};
+    \node[above = 0.25cm of installation] (nfs-host) {nfs.university.edu};
+    \node[draw, fit = (installation) (nfs) (nfs-host)] (nfs-server) {};
+    
+    \node[draw, right = 3cm of lic-file] (simics01) {Симуляция};
+    \node[draw, below = 0.25cm of simics01] (lab01-client) {Клиент Simics};
+    \node[above = 0.25cm of simics01] (lab01-host) {lab01.university.edu};
+    \node[draw, fit = (simics01) (lab01-client) (lab01-host)] (lab01) {};
+
+    \node[draw, below = 1.5cm of lab01] (simics02) {Симуляция};
+    \node[draw, below = 0.25cm of simics02] (lab02-client) {Клиент Simics};
+    \node[above = 0.25cm of simics02] (lab02-host) {lab02.university.edu};
+    \node[draw, fit = (simics02) (lab02-client) (lab02-host)] (lab02) {};
+
+    \node[draw, below = 1.5cm of lab02] (simics03) {Симуляция};
+    \node[draw, below = 0.25cm of simics03] (lab03-client) {Клиент Simics};
+    \node[above = 0.25cm of simics03] (lab03-host) {lab03.university.edu};
+    \node[draw, fit = (simics03) (lab03-client) (lab03-host)] (lab03) {};
+    
+    \draw[->] (lmgrd.east) -- (lab01-client.west);
+    \draw[->] (lmgrd.east) -- (lab02-client.west);
+    \draw[->] (lmgrd.east) -- (lab03-client.west);
+    
+    \coordinate[right = 1cm of installation]  (midpoint);
+    \draw[<-] (installation) -| (midpoint);
+    \draw[->] (midpoint) |- (simics01);
+    \draw[->] (midpoint) |- (simics02);
+    \draw[->] (midpoint) |- (simics03);
+    
+\end{tikzpicture}
+\caption{Расположение и функции узлов инсталляции Simics}\label{fig:install-overview}
+\end{figure}
+
+
+\subsection{Решение возникших проблем}
+
+\begin{description}
+    \item[Невозможно стартовать lmgrd]
+    
+    \item[Невозможно запустить Simics]
+    
+    \item[Нет подключения к демону лицензии с сервера]
+
+    
+    \item[Нет подключения к демону лицензии по сети] 
+    
+    \item[Демон лицензий не работает после перезагрузки сервера] 
+    
+    
+    \item[Исчерпано число лицензий]
+    
+\end{description}
+
+\section{Обновление пакетов инсталляции}
+
+\todo
+
+\iftoggle{webpaper}{
+    \printbibliography[title={Литература}]
+}{}
+
