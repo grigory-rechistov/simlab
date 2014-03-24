@@ -4,11 +4,11 @@
 \documentclass[a5paper, 11pt, oneside, titlepage, numbers=endperiod]{scrbook}
 %\documentclass[a4paper, 10pt,twoside,titlepage]{book} % swap for latex2rtf
 
-\def \documentversion {1.1β} % increment and don't forget to update history.tex
+\def \documentversion {1.1$\beta$}
 
 % A switch to change between document rendering options
-\usepackage{etoolbox}
-\newtoggle{webpaper}
+ \usepackage{etoolbox}
+ \newtoggle{webpaper}
 \toggletrue{webpaper}
 %\togglefalse{webpaper}
 
@@ -21,6 +21,9 @@
 \usepackage{caption}
 \DeclareCaptionFormat{myformat}{\hfill#1#2\\ \bfseries#3}
 \captionsetup[table]{justification=centering, singlelinecheck=off, format=myformat, labelformat = simple} % Ugly hack to remove prefix "table"
+
+\usepackage{tikz}
+\usetikzlibrary{shapes, calc, arrows, fit, positioning, decorations, patterns, decorations.pathreplacing, chains, snakes}
 
 \usepackage{amsfonts}
 \usepackage{amsmath}
@@ -155,6 +158,8 @@
 \include{app-broken-script}
 \include{target-script}
 \include{debug-example}
+
+\include{installation}
 
 \iftoggle{webpaper}{
     \include{todo}
