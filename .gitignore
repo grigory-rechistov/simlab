@@ -3,6 +3,7 @@
 *.bcf
 *.blg
 *.out
+*.bbl
 
 practicum.fot
 practicum.run.xml
