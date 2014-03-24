@@ -1,6 +1,6 @@
 \chapter{Установка и лицензирование Simics} \label{chap:installation-notes}
 
-В данное приложение включена информация по лицензированию и установке Simics в учебной лаборатории. Наиболее полная информация по данному вопросу содержится в документе «Simics Installation Guide», который идёт в поставке с пакетами Simics.
+В данное приложение включена информация по лицензированию и установке Simics в учебной лаборатории. Наиболее полная информация по данному вопросу содержится в документе «Simics Installation Guide», который идёт в поставке с пакетами Simics (файл  \texttt{installation-guide.pdf}).
 
 Приводимые ниже инструкции были собраны для Simics версии 4.6 для хозяйской системы Linux 64 бит, рекомендуемой для всех пользователей. Для ОС Linux 32 бит инструкции изменяются незначительно; для ОС Windows они применимы после учёта особенностей графического процесса инсталляции.
 
@@ -16,32 +16,90 @@
 
 Использование Simics по академической программе должно строго соответствовать условиям соглашения, т.е. быть ограничено учебной и/или некоммерческой научно-исследовательской деятельностью. В случае возникновения необходимости проведения коммерческих исследований или разработок необходимо обратиться к представителям Wind River для получения нового соглашения и типа лицензии.
 
-Держатель лицензии обязан донести эту информацию до всех пользователей инсталляции и контролировать выполнение ими условий соглашения, в том числе с помощью административных и технических мер.
+Держатель лицензии от участвующего университета обязан донести эту информацию до всех пользователей инсталляции и контролировать выполнение ими условий соглашения, в том числе с помощью административных и технических мер.
 
 \todo ограничения файервола
 \todo Порты
 
-\section{Установка пакетов Simics}
+\section{Установка файлов и запрос лицензии}
 
-Каждый пакет --- это файл с именем вида \todo{}. 
+\subsection{Пакеты}
 
-Ключи шифрования получите у спонсора вашей академической программы.
+Simics распространяется в формате пакетов --- набора файлов, реализующих одну или несколько типов моделируемых систем или функциональность самого симулятора. Каждый пакет имеет свой фиксированный номер. Пакет \textnumero 1000 --- это Simics Base, содержащий базовую функциональность симулятора. Все остальные пакеты являются дополнениями к нему.
+
+Дистрибутив пакета --- это файл с именем вида \texttt{simics-pkg-1000-4.6.34-linux64.tar}.  Здесь 1000 --- номер пакета, 4.6.34 --- версия пакета, linux64 --- архитектура хозяйской системы. Каждый дистрибутив каждого пакета зашифрован собственным ключом, состоящим из 32 символов. Дистрибутивы и их ключи получите у спонсора вашей академической программы.
+
+Для установки всех необходимых файлов выполняется следующая процедура. Часть команд может потребовать наличия прав администратора.
 
 \begin{enumerate}
-    \item Разархивируйте все пакеты во временую директорию:
+\item Разархивируйте все пакеты *.tar:
+\begin{lstlisting}
+$for f in simics-pkg-*.tar; do tar xf $f; done
+\end{lstlisting}
+\item В созданной директории \texttt{simics-4.6-install} запустите скрипт установки:
+\begin{lstlisting}
+$ cd simics-4.6-install
+# ./install-simics.pl
+\end{lstlisting} 
     
+\item Введите ключи шифрования для каждого номера пакета, который планируется установить:
+\begin{lstlisting}
+-> Looking for Simics packages in current directory...
+Enter a decryption key for package-1000-4.6.34-linux64.tar.gz.tf,
+or Enter to [Abort]: [Ключ]
+\end{lstlisting} 
+
+\item На вопрос, какие из пакетов требуется установить, ответьте <<All packages>>:
+\begin{lstlisting}
+install-simics can install the following packages:
+ Number  Name          Type    Version  Host     Package
+   1     Simics-Base   simics  4.6.34   linux64  package-1000
+   2     Eclipse       addon   4.6.16   linux64  package-1001
+   3     All packages
+Please enter the numbers of the packages you want to install, as in "1 4 3"
+Package numbers, or Enter to [Abort]:  3
+\end{lstlisting}
     
-    \item Запустите скрипт установки
-    
-    
-    \item Ответьте на вопросы
-    
-    \item При запросе файла с лицензией пропустите шаг
-    
-    \item 
+\item На вопрос о директории назначения введите абсолютный путь или оставьте значение по умолчанию:
+\begin{lstlisting}
+Enter a destination directory for installation, or Enter
+for [/opt/simics]:  [Путь установки или Enter]
+\end{lstlisting}
+
+\item Подтвердите начало установки, выбрав <<y>>.
+
+\item При введении правильных ключей дистрибутивы будут расшифрованы и установлены в указанную при установке директорию --- в ней должны появиться подпапки с файлами из пакетов Simics.
+\begin{lstlisting}
+-> Decrypting package-1000-4.6.34-linux64.tar.gz.tf
+-> Testing package-1000-4.6.34-linux64.tar.gz
+-> Installing package-1000-4.6.34-linux64.tar.gz
+-> Decrypting package-1001-4.6.16-linux64.tar.gz.tf
+-> Testing package-1001-4.6.16-linux64.tar.gz
+-> Installing package-1001-4.6.16-linux64.tar.gz
+
+===============================
+
+install-simics has finished installing the packages and will now
+configure them.
+
+No previous Simics installation was found. If you wish to configure
+the newly installed Simics from a previous installation not found by
+this script, you can do so by running the 'addon-manager' script in
+the Simics installation with the option --upgrade-from:
+    ./bin/addon-manager --upgrade-from /previous/install/
+
+install-simics has installed the following add-on package:
+   Eclipse  4.6.16  /opt/simics/simics-eclipse-4.8.26
+\end{lstlisting}
+
+\item На вопрос о регистрации расширений (\abbr add-on) ответьте <<y>>:
+\begin{lstlisting}
+Do you wish to make these add-on packages available in
+Simics-Base 4.6.34? (y, n) [y]:  y
+\end{lstlisting}   
 \end{enumerate}
 
-Проверьте указанную при установке директорию --- в ней должны находиться подпапки с файлами Simics.
+После успешного завершения файлы Simics были скопированы на ваш диск. Следующий шаг --- получение лицензии для их запуска. Он описывается далее.
 
 \subsection{Получение lmhostid}
 
@@ -55,11 +113,18 @@
     \item Установите пакет \texttt{lsb-core} на системе. Для Debian и Ubuntu это выполняется командой 
     
     \texttt{\# apt-get install lsb-core}
-    
-    
-    \item Установите пакеты Simics. При запросе лицензии не указывайте ничего.
-    
+         
     \item Для получения lmhostid на сервере, \textit{который будет использоваться для запуска демона лицензий}, выполните команду:
+    
+\begin{lstlisting}
+$ /opt/simics/simics-4.6.34/flexnet/linux64/bin/lmutil lmhostid
+lmutil - Copyright (c) 1989-2011 Flexera Software, Inc. All Rights Reserved.
+The FlexNet host ID of this machine is ""602fe934a369 422fe934a36c ""
+Only use ONE from the list of hostids.
+\end{lstlisting}
+
+Выданное число (в примере выше <<602fe934a369>>) --- это lmhostid. Если чисел выдано несколько, то используйте только одно из них.
+    
 \end{enumerate}
 
 
