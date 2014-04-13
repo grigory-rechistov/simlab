@@ -22,7 +22,7 @@ Extension Builder                                  1012    4.6.6     (4042)
 $ /share/simics/simics-4.6/simics-4.6.<minor>/bin/workspace-setup
 \end{lstlisting}
 
-Также версию Simics можно узнать прямо изнутри симуляции:
+Также версию Simics можно узнать из командной строки любой запущенной симуляции:
 
 \begin{lstlisting}
 simics> version
@@ -35,9 +35,9 @@ simics> version
 %\begin{longtable}{|p{0.3\textwidth}|l|p{0.3\textwidth}|}\hline
 \textbf{Команда}                          & \textbf{Синонимы}  & \textbf{Выполняемая функция}\\\hline
 \texttt{continue}                         & \texttt{c, r, run} & Начать или продолжить симуляцию\\\hline
-\texttt{stop}     						  &                    & Остановить симуляцию\\\hline
-\texttt{step-cycle [count]}				  & \texttt{sc}		   & Исполнить count циклов, печатаю следующую инструкцию\\\hline
-\texttt{exit}     						  & \texttt{quit, q}   & Выйти из симулятора\\\hline
+\texttt{stop}                             &                    & Остановить симуляцию\\\hline
+\texttt{step-cycle [count]}               & \texttt{sc}        & Исполнить count циклов, печатаю следующую инструкцию\\\hline
+\texttt{exit}                             & \texttt{quit, q}   & Выйти из симулятора\\\hline
 \texttt{run-command-file <script.simics>} &                    & Выполнить скрипт Simics\\\hline
 \texttt{pregs [-all]}                     &                    & Распечатать содержимое регистров текущего процессора\\\hline
 \texttt{print-time [-all]}                & \texttt{ptime}     & Вывести значение виртуального времени процессора\\\hline
