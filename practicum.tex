@@ -4,7 +4,7 @@
 \documentclass[a5paper, 11pt, oneside, titlepage, numbers=endperiod]{scrbook}
 %\documentclass[a4paper, 10pt,twoside,titlepage]{book} % swap for latex2rtf
 
-\def \documentversion {1.1$\beta$}
+\def \documentversion {1.2$\beta$}
 
 % A switch to change between document rendering options
  \usepackage{etoolbox}
@@ -12,7 +12,7 @@
 \toggletrue{webpaper}
 %\togglefalse{webpaper}
 
-\usepackage[top=1.5cm, bottom=2.2cm, left=1.84cm, right=1.5cm, footskip=1cm]{geometry}
+\usepackage[top=1.5cm, bottom=2.cm, left=1.84cm, right=1.5cm, footskip=1.cm]{geometry}
 \footskip=1.2cm
 
 %\usepackage[utf8]{inputenc} % uncomment for latex2rtf 
@@ -101,9 +101,9 @@
 \newcommand{\dictumtext}{\normalfont\normalcolor\sffamily\tiny}
 \setcounter{tocdepth}{2}
 
-\usepackage{draftwatermark}
-\SetWatermarkFontSize{35.83pt}
-\SetWatermarkScale{3.0}
+%\usepackage{draftwatermark}
+%\SetWatermarkFontSize{35.83pt}
+%\SetWatermarkScale{3.0}
 
 \addbibresource{./practicum.bib}
 \renewcommand*{\multicitedelim}{\addcomma\space} % grouped cites separated by commas not semicolons
@@ -150,6 +150,8 @@
 \include{lab03}
 
 \include{lab04}
+
+\include{lab05}
 
 \appendix
 \appendixpage

@@ -1,0 +1,129 @@
+\chapter{Моделирование платформы с архитектурой CHIP16}\label{chap:lab05}
+
+Данная индивидуальная работа посвящена реализации модели компьютерной платформы, основанной на спецификации CHIP16~\cite{chip16-ngemu} --- полностью виртуальной системы, предназначенной для запуска простых видеоигр. Модель строится на основе API Simics и оформляется как набор модулей и сценариев для данного симулятора.
+
+\section{Исходные спецификации CHIP16}
+
+CHIP16 --- это RISC-подобный процессор фон-Неймана, работающий на частоте 1~МГц, имеющий 64 кбайт ОЗУ, со спрайтовой 16-цветной графикой разрешением 320×240, джойстиками с 8 кнопками и одноканальной звуковой картой.
+
+\subsection{Существующие приложения}
+
+\begin{itemize}
+    \item Референсный симулятор --- \textsc{mash16}~\cite{chip16-mach16}.
+    \item Описание устройств, набора инструкций и периферии~\cite{chip16-machspec}.
+    \item Готовые образы памяти с приложениями, собранными для этой архитектуры~\cite{chip16-roms}.
+\end{itemize}
+
+\section{Структурная схема платформы}
+
+Базовые узлы системы показаны на рис.~\ref{fig:chip16-platform}. Каждый обозначенный блок представляет собой один класс Simics, имя которого стоит после двоеточия.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=latex, node distance=0.5cm, font=\small]
+\begin{scope}[minimum width=4cm]
+    \node[draw] (cpu) {\textsc{cpu}: chip16};
+    \node[draw, below = of cpu.south west, anchor=north west] (graph) {\textsc{graphics}: graph16};
+    \node[draw, below = of graph.south west, anchor=north west] (sound) {\textsc{sound}: snd16};
+    \node[draw, below = of sound.south west, anchor=north west] (joystick) {\textsc{joystick}: input16};
+\end{scope}
+    
+\begin{scope}[minimum width = 3.9cm, inner xsep = 0pt]
+     \node[draw, rotate=90, right = 1cm of joystick.south east, anchor=north west] (memory-space) {\textsc{cspace}: memory-space};
+    \node[draw, rotate=90, right = 1cm of memory-space.south, anchor = north] (ram) {\textsc{ram}: ram};
+    
+    \node[draw, rotate=90, left = 1cm of cpu.north west, anchor=south east] (video-space) {\textsc{vspace}: memory-space};
+    \node[draw, rotate=90, left = 1cm of video-space.south, anchor = south] (video-ram) {\textsc{video-ram}: ram};
+\end{scope}
+
+\draw[<->] (cpu.east) -- (cpu.east -| memory-space.north);
+\draw[<-] (graph.east) -- (graph.east -| memory-space.north);
+\draw[<-] (sound.east) -- (sound.east -| memory-space.north);
+\draw[->] (joystick.east) -- (joystick.east -| memory-space.north);
+\draw[<->] (graph.west) -- (graph.west -| video-space.south);
+
+\draw[<->] (memory-space) -- (ram);
+\draw[<->] (video-space) -- (video-ram);
+
+\draw[->] (graph) -- (cpu) node[midway, right] {\tiny\texttt{VBLANK}};
+
+\end{tikzpicture}
+\caption{Схема соединения блоков}\label{fig:chip16-platform}
+\end{figure}
+
+\section{Модификации спецификации для полноплатформенной модели}
+
+Оригинальная документация не описывает некоторые важные для практического построения детали взаимодействия узлов. Поэтому для нужд задания вводятся уточнения по принципам работы ряда узлов.
+
+\paragraph{VBLANK.} Инструкция \textsc{vblank} введена для синхронизации ЦПУ с видеопроцессором. В данной работе её семантика изменена. \textsc{vblank} вызывает остановку процессора до поступления следующего прерывания.
+
+\paragraph{Прерывания.} Для обеспечения работы \textsc{vblank} используется прерывание от видеокарты до процессора.
+
+\paragraph{Инструкции DRW, PAL, SNG, CLS, BGC, SPR, FLIP, SNDx, SNP}. Данные инструкции предназначены для работы с периферией (видео и звуком). Для их реализации необходимо иметь однонаправленный канал для передачи сообщений. Для этих нужд используется  часть резервированного диапазона адресов I/O. Карта памяти выглядит следующим образом.
+
+\todo Описать форматы пакетов аудио- и видеосообщений.
+
+\begin{tabular}{rrl}
+Диапазон адресов         & Длина & Назначение \\
+\texttt{0x0000 -- 0xfdef}& 65008 & ОЗУ        \\
+\texttt{0xfdf0 -- 0xffef}& 512   & Стек       \\
+\texttt{0xfff0 -- 0xfff1}& 2     & Джойстик 1 \\
+\texttt{0xfff2 -- 0xfff3}& 2     & Джойстик 2 \\
+\texttt{0xfff4 -- 0xfff5}& 2     & Звуковая карта \\
+\texttt{0xfff6 -- 0xfff9}& 4     & Видеокарта \\
+\texttt{0xfffa -- 0xffff}& 6     & Зарезервировано \\
+\end{tabular}
+
+
+\section{Ход работы}
+
+В данной секции разобраны общие вопросы организации разработки.
+\subsection{Технология разработки}
+
+\begin{itemize}
+\item Хранение кода --- в SVN \todo{URL}. Лицензия кода --- закрытая, согласно договору предоставления Intel Academic SLA 1.0 (см. пункт 6.2). 
+
+\item Документация --- в вики \todo{URL}. Лицензия документации --- CC BY-SA.
+
+\item Распределение задач --- по одному модулю Simics на одного--двух выполняющих.
+\item Промежуточная проверка качества --- юнит тесты для отдельных устройств.
+\item Финальный продукт работы --- набор моделей и связывающий их скрипт (построенный на основе стандартной цели cosim)
+\end{itemize}
+
+\subsection{ЦПУ}
+
+Основа для модели --- модифицированный \texttt{sample-risc}. \todo Подготовить код.
+
+\subsection{Видеоконтроллер}
+
+Основа для модели --- \texttt{sample-device-c}. Отрисовка изображения производится через SDL.
+
+\subsection{Джойстик}
+
+Основа для модели --- \texttt{sample-device-c}. Ввод с хозяйской клавиатуры производится через SDL.
+
+\section{Минимум и максимум цели проекта}
+
+В зависимости от полноты выполнения студентами подзадач проекта выделяются следующие вехи, обозначающие достижение следующей ступени к симуляции, по сравнению с референсной моделью \textsc{mash16}.
+
+\begin{enumerate}
+    \item Модель способна исполнять образ памяти, написанный участниками проекта.
+    \item Модель способна исполнять образ памяти из директории Demo (графическое приложение без звука и ввода).
+    \item Модель способна исполнять образ памяти из директории Demo (графическое приложение со звуком и без ввода).
+    \item Модель способна исполнять образ памяти из директории Games (графическое приложение со звуком и вводом с джойстика).
+\end{enumerate}
+
+% \subsection{Предложения для расширения архитектуры CHIP16}
+% 
+% \paragraph{Таймер.} Программируемый таймер.
+% 
+% \paragraph{Клавиатурный ввод.}
+% 
+% \paragraph{Дисковый накопитель.}
+% 
+% \paragraph{Контроллер прерываний.}
+
+
+\iftoggle{webpaper}{
+    \printbibliography[title={Список литературы к занятию}]
+}{}
