@@ -1,0 +1,168 @@
+% Compile with XeLaTeX, TeXLive 2013 or more recent
+\documentclass{beamer}
+
+% Base packages
+\usepackage{fontspec}
+\usepackage{xunicode}
+\usepackage{xltxtra}
+
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{longtable}
+\usepackage{csquotes}
+\usepackage{standalone}
+
+% Setup Russian hyphenation
+\usepackage{polyglossia}
+\defaultfontfeatures{Scale=MatchLowercase, Mapping=tex-text}
+
+% Setup fonts
+\newfontfamily\russianfont{CMU Serif}
+\setromanfont{CMU Serif}
+\setsansfont{CMU Sans Serif}
+\setmonofont{CMU Typewriter Text}
+
+\setdefaultlanguage[spelling=modern]{russian} % for polyglossia
+\setotherlanguage{english} % for polyglossia
+
+% \usepackage{libertine}
+
+% Vector drawings 
+\usepackage{tikz}
+\usetikzlibrary{shapes, calc, arrows, fit, positioning, decorations, patterns, decorations.pathreplacing, chains, snakes}
+
+% Be able to insert hyperlinks
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, filecolor=black, citecolor=black, urlcolor=blue , pdfauthor=Grigory Rechistov <grigory.rechistov@phystech.edu>, pdftitle=Моделирование OpenRISC 1000 на Wind River Simics}
+% \usepackage{url}
+
+% Misc optional packages
+\usepackage{underscore}
+\usepackage{amsthm}
+
+% A new command to mark not done places
+\newcommand{\todo}[1][Напиши меня]{{\color{red}TODO\ #1}}
+
+
+\title{Компьютерная симуляция }
+% \subtitle{Курс «Программное моделирование вычислительных систем»}
+\subject{Лекция}
+\author[Григорий Речистов]{Григорий Речистов \\ \small{\href{mailto:grigory.rechistov@intel.com}{grigory.rechistov@intel.com}}}
+\date{\today}
+\pgfdeclareimage[height=0.5cm]{intel-logo}{../images/intel.png}
+\logo{\pgfuseimage{intel-logo}}
+
+
+\typeout{Copyright 2014 Grigory Rechistov}
+
+\usetheme{Berlin}
+\setbeamertemplate{navigation symbols}{}%remove navigation symbols
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}
+\tableofcontents
+\end{frame} 
+
+\section{Обзор}
+
+\begin{frame}{На прошлой лекции}
+\begin{itemize}
+\item Оптимистичные схемы
+\item Откат состояния 
+\item Time Warp и virtual time \pause
+\item Вопрос: как выполнять вывод (\texttt{printf}) в оптимистичной симуляции?
+\end{itemize}
+
+\end{frame}
+
+\section{Атомарные инструкции}
+
+\begin{frame}{Атомарные инструкции}
+
+\begin{tikzpicture}[>=latex]
+
+\node[draw, circle] (core1) {Ядро 1};
+
+\node[draw, circle, right = of core1] (core2) {Ядро 2};
+
+\node[draw, circle, right = of core2] (core3) {Ядро 3};
+
+\node[draw, circle, right = of core3] (core4) {Ядро 4};
+
+\node[below = 2cm of core1] (c1) {};
+\node[below = 2cm of core4] (c2) {};
+
+\node[draw, fit = (c1) (c2) ] (shmem) {Общая память} ;
+
+\path (core2.south) -- (core3.south) node[midway, yshift = -1cm] (lock) {\texttt{LOCK}};
+\draw[thick,] (core2) |- (lock);
+\draw[thick,->] (lock) -- (shmem);
+
+\path (core1.south) |- (lock) coordinate[midway] (block1); %{X};
+\path (core3.south) |- (lock) coordinate[midway] (block3); %{X};
+\path (core4.south) |- (lock) coordinate[midway] (block4); %{X};
+
+\draw[->] (core1.south) -- (block1);
+\draw[->] (core3.south) -- (block3);
+\draw[->] (core4.south) -- (block4);
+
+\draw[dashed] (block1) -- (lock);
+\draw[dashed] (lock)   -- (block3);
+\draw[dashed] (block3) -- (block4);
+
+\end{tikzpicture}
+
+\begin{itemize}
+    \item {Read--Modify--Write} для ячейки в памяти
+    \item Средства реализации семафоров
+    \item «Дорогие» для исполнения \pause
+    \item {Вопрос}: нужны ли атомарные инструкции для однопроцессорных систем?
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Симуляция инструкций}
+
+\begin{enumerate}
+    \item Использование хозяйских инструкций
+    \item Использование критических секций
+    \item Использование транзакций
+\end{enumerate}
+\end{frame}
+
+\section{Литература}
+
+\begin{frame}[allowframebreaks]{Рекомендуемая литература}
+\begin{thebibliography}{99}
+    \bibitem{consensus-number} \textit{Maurice Herlihy}. “Wait-Free Synchronization” \url{http://cs.brown.edu/~mph/Herlihy91/p124-herlihy.pdf}
+    \bibitem{coremu} \textit{Zhaoguo Wang et al.} COREMU: a Scalable and Portable Parallel Full-System Emulator \url{http://ppi.fudan.edu.cn/_media/publications\%3Bcoremu-ppopp11.pdf},
+    \bibitem{consistency-report} \textit{Kourosh Gharachorloo} Memory Consistency Models for Shared-Memory Multiprocessors. \url{http://infolab.stanford.edu/pub/cstr/reports/csl/tr/95/685/CSL-TR-95-685.pdf}
+    \bibitem{whymb} \textit{Paul E. McKenney} Memory Barriers: a Hardware View for Software Hackers \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.152.5245}
+    \bibitem{pqemu} \textit{Jiun-Hung Ding et al.} PQEMU: A Parallel System Emulator Based on QEMU \url{http://dx.doi.org/10.1109/ICPADS.2011.102}
+    \bibitem{itanium-mem-order} \textit{Intel Corporation} A Formal Specification of {Intel}® {Itanium}® Processor Family Memory Ordering
+\end{thebibliography}
+\end{frame}
+
+
+\section{Конец}
+% The final "thank you" frame 
+\begin{frame}
+
+{\huge{Спасибо за внимание!}\par}
+
+\vfill
+
+\vfill
+
+\tiny{\textit{Замечание}: все торговые марки и логотипы, использованные в данном материале, являются собственностью их владельцев. Представленная точка зрения отражает личное мнение автора.}
+
+\end{frame}
+
+% \section{Резерв}
+
+\end{document}
