@@ -43,7 +43,7 @@
 \newcommand{\todo}[1][Напиши меня]{{\color{red}TODO\ #1}}
 
 
-\title{Компьютерная симуляция }
+\title{Краткое введение в OpenRISC 1000}
 % \subtitle{Курс «Программное моделирование вычислительных систем»}
 \subject{Лекция}
 \author[Григорий Речистов]{Григорий Речистов \\ \small{\href{mailto:grigory.rechistov@intel.com}{grigory.rechistov@intel.com}}}
@@ -67,85 +67,26 @@
 \tableofcontents
 \end{frame} 
 
-\begin{frame}{Обо мне}
-
-\raggedleft \includegraphics[height=0.3\textheight]{./grigory-rechistov}
-
-\begin{itemize}
-\item Закончил МФТИ в 2010 г.
-\item Защитил диссертацию к.т.н в 2013 г.
-\item Работаю в Московском отделении Intel 
-\item Интересы: симуляция, образование, спорт
-
-\end{itemize}
-
-
-\end{frame} 
 
 \section{Обзор}
 
-\begin{frame}{Место симуляции в области Computer Science}
+\begin{frame}{Что такое OpenRISC}
 
-\centering
-
-\begin{tikzpicture}[>=latex, font=\small]
-
-\begin{scope}[minimum width = 8cm, node distance = 0.2cm, inner sep=1pt]
-
-\node[draw, ] (schematics) {Схемотехника};
-\node[draw, above = of schematics] (digital) {Цифровая электроника};
-\node[draw, above = of digital] (rtl-design) {Проектирование микросхем};
-\node[draw, above = of rtl-design] (transactions) {Разработка стандартов передачи данных};
-\node[draw, above = of transactions] (simulation) {Симуляция};
-\node[draw, above = of simulation] (firmware) {Firmware};
-\node[draw, above = of firmware] (oses) {Операционные системы};
-\node[draw, above = of oses] (drivers) {Драйверы};
-\node[draw, above = of drivers] (compilers) {Компиляторы};
-\node[draw, above = of compilers] (software) {Прикладные программы};
-\node[draw, above = of software] (algorithms) {Алгоритмы};
-
-\end{scope}
-\end{tikzpicture}
+\todo
 
 \end{frame}
 
-\section{Фрактал абстракций цифровой техники}
+\begin{frame}{Почему OpenRISC для симуляции}
 
-\begin{frame}{КМОП-транзистор}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
 \end{frame}
 
+\begin{frame}{ISA}
 
-\begin{frame}{Цифровые вентили}
-\begin{tikzpicture}[>=latex]
+\includegraphics[width=0.8\textwidth]{./or1k-isa}
 
-\end{tikzpicture}
-\end{frame}
+% \begin{tikzpicture}[>=latex]
 
-\begin{frame}{Центральный процессор: конвеер}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Центральный процессор: минимальная обвязка}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Платформа компьютерной системы}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Сеть компьютерных систем}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
+% \end{tikzpicture}
 \end{frame}
 
 
