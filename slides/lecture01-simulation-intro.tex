@@ -29,6 +29,7 @@
 % Vector drawings 
 \usepackage{tikz}
 \usetikzlibrary{shapes, calc, arrows, fit, positioning, decorations, patterns, decorations.pathreplacing, chains, snakes}
+\usepackage[siunitx]{circuitikz}
 
 % Be able to insert hyperlinks
 \usepackage{hyperref}
@@ -114,20 +115,49 @@
 \begin{frame}{КМОП-транзистор}
 \begin{tikzpicture}[>=latex]
 
+\draw[fill=blue!10] (0,0) rectangle (10,-2);
+\node at (5,-1.5) {n-подложка (Si)};
+
+\draw[fill=red!10] (0,0) rectangle (4, -1);
+\node at (2,-0.5) {p-исток};
+
+\draw[fill=red!10] (6,0) rectangle (10, -1);
+\node at (8,-0.5) {p-сток};
+
+\draw[fill=black!10] (3,0) rectangle (7, 0.5);
+\node at (5,0.25) {Оксид};
+
+\draw[fill=green!10] (3,0.5) rectangle (7, 1.5);
+\node at (5, 1) {Затвор (металл)};
+
+\draw[-o] (1,0) -- (1, 1);
+\draw[-o] (9,0) -- (9, 1);
+\draw[-o] (5,1.5) -- (5, 2.5);
+
 \end{tikzpicture}
 \end{frame}
 
 
 \begin{frame}{Цифровые вентили}
-\begin{tikzpicture}[>=latex]
+\begin{circuitikz} 
+\draw
+(0,0)       node[nigfete, ] (nigfete) {}
+(nigfete.D) node[pigfete, anchor=S] (pigfete) {}
 
-\end{tikzpicture}
+
+(pigfete.G) (nigfete.G) {};
+
+
+\end{circuitikz} 
+
 \end{frame}
 
 \begin{frame}{Центральный процессор: конвеер}
 \begin{tikzpicture}[>=latex]
 
+
 \end{tikzpicture}
+
 \end{frame}
 
 \begin{frame}{Центральный процессор: минимальная обвязка}
