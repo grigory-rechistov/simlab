@@ -1,0 +1,91 @@
+\chapter{Моделирование процессора архитектуры OpenRISC 1000}\label{chap:lab06}
+
+Данная индивидуальная работа посвящена реализации модели компьютерной платформы, основанной на спецификации OpenRISC 10000~\cite{or1k-spec}. Модель строится на основе API Simics и оформляется как набор модулей и сценариев для данного симулятора.
+
+\section{Спецификации OpenRISC 1000}
+
+OpenRISC 1000 --- \todo 
+
+Принцип организации спецификации --- это опциональность многих частей функциональности, что позволяет ограничиваться только важными минимально необходимыми для конкретной реализации частями.
+
+\subsection{Набор регистров}
+
+\todo Нарисовать рис.~\ref{fig:or1k-regs}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[>=latex, node distance=0.5cm, font=\small]
+\begin{scope}[minimum width=4cm]
+    \node[draw] (cpu) {\textsc{cpu}: chip16};
+    \node[draw, below = of cpu.south west, anchor=north west] (graph) {\textsc{graphics}: graph16};
+    \node[draw, below = of graph.south west, anchor=north west] (sound) {\textsc{sound}: snd16};
+    \node[draw, below = of sound.south west, anchor=north west] (joystick) {\textsc{joystick}: input16};
+\end{scope}
+    
+\begin{scope}[minimum width = 3.9cm, inner xsep = 0pt]
+     \node[draw, rotate=90, right = 1cm of joystick.south east, anchor=north west] (memory-space) {\textsc{cspace}: memory-space};
+    \node[draw, rotate=90, right = 1cm of memory-space.south, anchor = north] (ram) {\textsc{ram}: ram};
+    
+    \node[draw, rotate=90, left = 1cm of cpu.north west, anchor=south east] (video-space) {\textsc{vspace}: memory-space};
+    \node[draw, rotate=90, left = 1cm of video-space.south, anchor = south] (video-ram) {\textsc{video-ram}: ram};
+\end{scope}
+
+\draw[<->] (cpu.east) -- (cpu.east -| memory-space.north);
+\draw[<-] (graph.east) -- (graph.east -| memory-space.north);
+\draw[<-] (sound.east) -- (sound.east -| memory-space.north);
+\draw[->] (joystick.east) -- (joystick.east -| memory-space.north);
+\draw[<->] (graph.west) -- (graph.west -| video-space.south);
+
+\draw[<->] (memory-space) -- (ram);
+\draw[<->] (video-space) -- (video-ram);
+
+\draw[->] (graph) -- (cpu) node[midway, right] {\tiny\texttt{VBLANK}};
+
+\end{tikzpicture}
+\caption{Регистры OpenRISC 1000}\label{fig:or1k-regs}
+\end{figure}
+
+\subsection{Набор инструкций}
+
+\todo Обрисовать.
+
+\section{Кодовая база Simics для создания моделей процессоров}
+
+Основа --- sample-risc, модифицированный для нужд учебного проекта:
+
+ - убрана мноноядерность
+
+
+
+\section{Порядок работы}
+
+\begin{enumerate}
+\item Подготовить workspace Simics
+\item Собрать код sample-risc
+\item \todo 
+
+\end{enumerate}
+
+
+\iftoggle{webpaper}{
+    \printbibliography[title={Список литературы к занятию}]
+}{}
+
+
+% День 1
+% 1.	[Лекция, 3 часа] Программное моделирование для задач совместной разработки аппаратуры и программ. Другие применения программных моделей. История использования. Симулятор Wind River Simics. Принципы работы, базовые понятия.
+% 2.	[Практикум, 5 часов] Знакомство с Simics: создание проекта, запуск моделирования, управление и инспектирование состояния симуляции. Сборка моделей шаблонных устройств.
+% День 2 
+% 1.	[Лекция, 2 часа] Моделирование центральных процессоров с помощью интерпретации. Моделирование периферийных устройств с помощью симуляции дискретных событий.
+% 2.	[Лекция, 1 час] Архитектура OpenRISC 1000. 
+% 3.	[Практикум, 5 часов] Создание модели процессора OpenRISC 1000 с использованием фреймворка Simics Model Builder: архитектурное состояние, набор инструкций ORBIS32.
+% День 3
+% 1.	[Практикум, 8 часов] Продолжение реализации основной и опциональной функциональности модели OpenRISC 1000.
+% а.	Набор инструкций ORBIS32.
+% б.	Поддержка исключений.
+% в.	Трансляция адресов: TLB и (MMU).
+% г.	Периферийные устройства: Tick timer facility.
+% д.	Периферийные устройства: PIC.
+% е.	Модель кэша данных.
+% ж.	Набор инструкций ORFPX32.
+% Проверка работоспособности модели с помощью юнит-тестирования и микро-приложений, собранных с помощью GCC-or1k.
