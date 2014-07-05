@@ -31,22 +31,25 @@ simics> version
 \section{Список часто используемых команд Simics}
 
 \begin{center}
-\begin{tabularx}{\textwidth}{|X|X|p{0.4\textwidth}|}\hline
-%\begin{longtable}{|p{0.3\textwidth}|l|p{0.3\textwidth}|}\hline
+\small
+\begin{tabularx}{\textwidth}{Xlp{0.4\textwidth}}
+%\begin{longtable}{|p{0.3\textwidth}|l|p{0.3\textwidth}|}\
 \textbf{Команда}                          & \textbf{Синонимы}  & \textbf{Выполняемая функция}\\\hline
-\texttt{continue}                         & \texttt{c, r, run} & Начать или продолжить симуляцию\\\hline
-\texttt{stop}                             &                    & Остановить симуляцию\\\hline
-\texttt{step-cycle [count]}               & \texttt{sc}        & Исполнить count циклов, печатаю следующую инструкцию\\\hline
-\texttt{exit}                             & \texttt{quit, q}   & Выйти из симулятора\\\hline
-\texttt{run-command-file <script.simics>} &                    & Выполнить скрипт Simics\\\hline
-\texttt{pregs [-all]}                     &                    & Распечатать содержимое регистров текущего процессора\\\hline
-\texttt{print-time [-all]}                & \texttt{ptime}     & Вывести значение виртуального времени процессора\\\hline
-\texttt{help <command>}                   & \texttt{h, man}    & Вывести справку о команде или понятии \\\hline
-\texttt{win-help}                         &                    & Открыть окно индексируемой справки \\\hline
-\texttt{win-control}                      &                    & Открыть окно \textbf{Simics Control}\\\hline
-\texttt{\%<register name>}                & \texttt{read-reg, write-reg} & Прочитать или записать содержимое регистра текущего процессора \\\hline
-\texttt{output-radix <10|16>}             &                    & Изменить основание используемой для вывода чисел системы счисления\\\hline
-\texttt{delete [id]}                      &                    & Удалить точку останова по её номеру \\\hline
+\texttt{help <topic>}                     & \texttt{man}       & Справка по команде, классу или слову topic\\
+\texttt{win-help}                         &                    & Открыть окно индексируемой справки \\
+\texttt{continue}                         & \texttt{c, r, run} & Начать или продолжить симуляцию\\
+\texttt{stop}                             &                    & Остановить симуляцию\\
+\texttt{step-cycle [count]}               & \texttt{sc}        & Исполнить count циклов, печатаю следующую инструкцию\\
+\texttt{exit}                             & \texttt{quit, q}   & Выйти из симулятора\\
+\texttt{run-command-file <script.simics>} &                    & Выполнить скрипт Simics\\
+\texttt{pregs [-all]}                     &                    & Распечатать содержимое регистров текущего процессора\\
+\texttt{print-time [-all]}                & \texttt{ptime}     & Вывести значение виртуального времени процессора\\
+\texttt{win-control}                      &                    & Открыть окно \textbf{Simics Control}\\
+\texttt{\%<register name>}                & \texttt{read-reg}  & Прочитать содержимое регистра текущего процессора \\
+\texttt{\%<register name> = <val>}        & \texttt{write-reg} & Записать значение в регистр текущего процессора \\
+\texttt{output-radix <10|16>}             &                    & Изменить основание используемой для вывода чисел системы счисления\\
+\texttt{break <address>}                  &                    & Поставить точку останова по адресу \\
+\texttt{delete [id]}                      &                    & Удалить точку останова по её номеру \\
 \end{tabularx}
 
 % \end{longtable}
