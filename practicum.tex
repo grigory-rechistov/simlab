@@ -7,13 +7,14 @@
 \def \documentversion {1.3$\beta$}
 
 % A switch to change between document rendering options
- \usepackage{etoolbox}
- \newtoggle{webpaper}
+\usepackage{etoolbox}
+\newtoggle{webpaper}
 \toggletrue{webpaper}
 %\togglefalse{webpaper}
 
 \usepackage[top=1.5cm, bottom=2.cm, left=1.84cm, right=1.5cm, footskip=1.cm]{geometry}
 \footskip=1.2cm
+\pagestyle{plain} % no headers, page numbers in footers
 
 %\usepackage[utf8]{inputenc} % uncomment for latex2rtf 
 
@@ -72,6 +73,8 @@
     % bibliography settings to put one global at the end
     \usepackage[language=auto, bibencoding=inputenc, style=gost-numeric, backend=biber, maxnames=4]{biblatex}
 }
+
+\usepackage{bytefield}
 
 \usepackage[subfigure]{tocloft}
 \renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}} % To set dots between chapter description and numbers

@@ -12,75 +12,124 @@ OpenRISC 1000 --- дизайн процессора, построенный по
 
 \subsection{Набор регистров}
 
-\todo Нарисовать рис.~\ref{fig:or1k-regs}
-
-Классификация регистров OpenRISC 1000, требующих реализации в ходе работы.
+Классификация регистров OpenRISC 1000 (рис.~\ref{fig:or1k-regs}), требующих реализации в ходе работы.
 \begin{itemize}
-    \item 32 регистра общего назначения шириной в 64 бита, доступные из пользовательского и супервизорного режимов: \texttt{R0} -- \textt{R31}. Регистр R0 всегда должен содержать ноль.
-    \item Регистры супервизора шириной 32 бита. Каждый из них имеет собственное имя и функциональность. Некоторые из них могут быть доступны на чтение из пользовательского режима.
-    \item Специфичные для модулей регистры. В случае, если некоторая опциональная часть спецификации реализована, с ней могут идти дополнительные регистры для индикации статуса и управления состоянием.
+    \item 32 регистра общего назначения шириной в 64 бита, доступные из пользовательского и супервизорного режимов: \texttt{R0} -- \texttt{R31}. Регистр R0 всегда должен содержать ноль.
+    \item Специфичные для модулей регистры (\abbr special purpose registers, SPR). В случае, если некоторая опциональная часть спецификации реализована, с ней могут идти дополнительные регистры для индикации статуса и управления состоянием. Каждый из них имеет собственное имя и функциональность. SPR разделены по группам. Группа 0 --- регистры супервизора шириной 32 бита. Некоторые из них могут быть доступны на чтение из пользовательского режима.
 \end{itemize}
-
 
 \begin{figure}[htbp]
 \centering
-\begin{tikzpicture}[>=latex, node distance=0.5cm, font=\small]
-\begin{scope}[minimum width=4cm]
-    \node[draw] (cpu) {\textsc{cpu}: chip16};
-    \node[draw, below = of cpu.south west, anchor=north west] (graph) {\textsc{graphics}: graph16};
-    \node[draw, below = of graph.south west, anchor=north west] (sound) {\textsc{sound}: snd16};
-    \node[draw, below = of sound.south west, anchor=north west] (joystick) {\textsc{joystick}: input16};
-\end{scope}
-    
-\begin{scope}[minimum width = 3.9cm, inner xsep = 0pt]
-     \node[draw, rotate=90, right = 1cm of joystick.south east, anchor=north west] (memory-space) {\textsc{cspace}: memory-space};
-    \node[draw, rotate=90, right = 1cm of memory-space.south, anchor = north] (ram) {\textsc{ram}: ram};
-    
-    \node[draw, rotate=90, left = 1cm of cpu.north west, anchor=south east] (video-space) {\textsc{vspace}: memory-space};
-    \node[draw, rotate=90, left = 1cm of video-space.south, anchor = south] (video-ram) {\textsc{video-ram}: ram};
-\end{scope}
 
-\draw[<->] (cpu.east) -- (cpu.east -| memory-space.north);
-\draw[<-] (graph.east) -- (graph.east -| memory-space.north);
-\draw[<-] (sound.east) -- (sound.east -| memory-space.north);
-\draw[->] (joystick.east) -- (joystick.east -| memory-space.north);
-\draw[<->] (graph.west) -- (graph.west -| video-space.south);
+\bytefieldsetup{bitwidth=0.07cm, endianness = big}
+\begin{bytefield}[]{32}
+    \bitheader{31, 0} \\
+    \bitbox{32}{PC} \\
+\end{bytefield}
 
-\draw[<->] (memory-space) -- (ram);
-\draw[<->] (video-space) -- (video-ram);
+\bytefieldsetup{bitwidth=0.07cm, endianness = big}
+\begin{bytefield}[]{64}
+    \bitheader{63, 0} \\
+    \bitbox{64}{GPR0} \\
+    \bitbox{64}{\dots} \\
+    \bitbox{64}{GPR31} \\
+\end{bytefield}
 
-\draw[->] (graph) -- (cpu) node[midway, right] {\tiny\texttt{VBLANK}};
+\begin{bytefield}[]{32}
+    \bitheader{31, 0} \\
+    \bitbox{32}{VR} \\
+    \bitbox{32}{UPR} \\
+    \bitbox{32}{CPUCFGR} \\
+    \bitbox{32}{\dots} \\
+    \bitbox{32}{ESR15} \\
+\end{bytefield}
 
-\end{tikzpicture}
+
+% \begin{tikzpicture}[>=latex, node distance=0.5cm, font=\small]
+%     \node[draw] (gpr0) {GPR0};
+%     \node[draw] (gpr31) {GPR31};
+% 
+% %     \node[draw, below = of cpu.south west, anchor=north west] (graph) {\textsc{graphics}: graph16};
+%     
+% \end{tikzpicture}
 \caption{Регистры OpenRISC 1000}\label{fig:or1k-regs}
 \end{figure}
 
 \subsection{Набор инструкций}
 
-\todo Обрисовать.
+Набор инструкций состоит из нескольких классов (рис.~\ref{fig:or1k-isa}), соответсвующих различным задачам и типам обрабатываемых данных.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[font=\small, node distance = 0.5cm]
+    \node[draw, ellipse] (ORBIS32) {ORBIS32};
+    \node[draw, ellipse, right = of ORBIS32] (ORBIS64) {ORBIS64};
+    \node[draw, ellipse, below = of ORBIS32] (ORFPX32) {ORFPX32};
+    \node[draw, ellipse, below = of ORBIS64] (ORFPX64) {ORFPX64};
+    \node[draw, ellipse, below = of ORFPX64] (ORVDX64) {ORVDX64};
+    \node[draw, ellipse, fit = (ORBIS32) (ORBIS64) (ORFPX32) (ORFPX64) (ORVDX64)] {};
+\end{tikzpicture}
+\caption{Классы инструкций набора команд OpenRISC 1000}\label{fig:or1k-isa}
+\end{figure}
 
 \begin{itemize}
-    \item 
+    \item ORBIS32 --- 32-битные команды общего назначения; единственный класс, обязательный для реализации;
+    \item ORBIS64 --- 64-битные команды общего назначения;
+    \item ORFPX32 --- 32-битные команды для работы над числами с плавающей запятой;
+    \item ORFPX64 --- 64-битные команды для работы над числами с плавающей запятой;
+    \item ORVDX64 --- команды для операции над векторами данных с элементами шириной 8, 16, 32 или 64 бита;
+    \item Частные команды, специфичные для конкретной модели.
 \end{itemize}
 
+Ширина отдельных инструкций фиксирована и равна 32 битам. ORBIS32 состоит из следующих подклассов команд:
+
+\begin{itemize}
+    \item арифметические операции;
+    \item базовые инструкции для обработки сигналов (\abbr digital signal processing, DSP);
+    \item загрузка и запись данных из памяти;
+    \item управление порядком исполнения;
+    \item прочие.
+\end{itemize}
 
 \section{Кодовая база Simics для создания моделей процессоров}
 
-Основа --- sample-risc, модифицированный для нужд учебного проекта:
+Основа модели ЦПУ --- код \texttt{sample-risc}, модифицированный для нужд учебного проекта:
+\begin{itemize}
+    \item убрана мноноядерность;
+    \item декодер упрощён до одной инструкции.
+\end{itemize}
 
- - убрана мноноядерность
+Основа модели таймера --- sample-device.
 
+Конфигурация платформы (ЦПУ, память, опционально таймер) --- основана на сценарии \texttt{queues-in-cosimulator.simics}.
+
+\section{Тестирование моделей}
+
+Для тестирования корректности моделирования отдельных инструкций применяется юнит-тестирование на основе фреймворка test-runner. Для проверки последовательностей команд код гостевой код может быть написан вручную в машинных кодах или же с помощью GNU toolchain~\cite{or1k-toolchain}.
 
 
 \section{Порядок работы}
 
 \begin{enumerate}
-\item Подготовить workspace Simics
-\item Собрать код sample-risc
-\item \todo 
+\item Подготовить workspace Simics.
+\item Собрать код sample-risc.
+\item Реализовать набор регистров базового архитектурного состояния.
+\item Реализовать декодер команд.
+\item Интегрировать модель openrisc в сценарий платформы.
+\item Реализовать модель таймера.
+\item Интегрировать модель таймера в сценарий платформы.
 
 \end{enumerate}
 
+\subsection{Дополнительные шаги}
+
+\begin{itemize}
+    \item Реализовать набор инструкций ORBIS64.
+    \item Реализовать функциональность TLB и/или MMU.
+    \item Реализовать устройство PIC.
+    \item Реализовать модель кэша данных.
+    \item Реализовать набор инструций ORFPX32.
+\end{itemize}
 
 \iftoggle{webpaper}{
     \printbibliography[title={Список литературы к занятию}]
