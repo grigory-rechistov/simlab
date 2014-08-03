@@ -98,6 +98,8 @@ simics> run-command-file targets/x86-x58-ich10/viper-firststeps.simics
 
 То же самое можно было сделать с помощью окна \textbf{Simics Control}, выбрав \textbf{File $\to$ New session from script} и открыв файл \texttt{viper-firststeps.simics}, лежащий в директории \texttt{x86-x58-ich10}.
 
+\paragraph{Автодополнение команд.} Если нажать несколько раз клавишу \textbf{Tab} при неполностью набранной строке команд, Simics автоматически дополнит её или предложит допустимые варианты для её завершения. Используйте это полезное свойство для ускорения набора и изучения списка понимаемых системой команд.
+
 Спустя некоторое время окно \textbf{Simics Control} покажет суммарную информацию о симулируемой системе (рис.~\ref{fig:viper-control}): тип процессора, объём памяти, диска. Также должно открыться новое окно \textbf{Serial Console on viper.mb.sb.com[0]} (рис.~\ref{fig:viper-serial-console}).
 
 \begin{figure}[ht]
@@ -139,7 +141,7 @@ simics>
 \begin{figure}
 	\centering
 	\includegraphics[width=0.6\textwidth]{./booted-linux.png}
-	\caption{Загруженная операционная система Linux}
+	\caption{Загруженная гостевая операционная система Linux}
 	\label{fig:booted-linux}
 \end{figure}
 
@@ -174,11 +176,7 @@ fpu             : yes
 fpu_exception   : yes                                                           
 cpuid level     : 11                                                            
 wp              : yes                                                           
-flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov 
-pat pse36 clflush dts acpi mmx fxsr sse sse2 ss tm pbe syscall nx rdtscp lm cons
-tant_tsc up arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf
- pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt
- lahf_lm ida dts tpr_shadow ept                                                 
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss tm pbe syscall nx rdtscp lm constant_tsc up arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperf mperf pni dtes64 monitor ds_cpl vmx est tm2 ssse3 cx16 xtpr pdcm sse4_1 sse4_2 popcnt lahf_lm ida dts tpr_shadow ept
 bogomips        : 3999.98                                                       
 clflush size    : 64                                                            
 cache_alignment : 64                                                            
@@ -190,7 +188,47 @@ power management:
 
 \section{Сохранение и восстановление состояния симуляции}
 
-\todo
+Так как в любой момент исполнения симуляции известны состояния всех моделируемых внутри неё устройств, имеется возможность записать их в постоянное хранилище, например, в файл. В дальнейшем эту точку сохранения (\abbr checkpoint) можно загрузить и продолжить симуляцию с той точки, в которой она была сохранена.
+
+В Simics для создания точки сохранения используется команда \texttt{write-configuration <name>}.
+
+\begin{itemize*}
+    \item Запустите симуляцию. Позвольте ей исполняться в течение нескольких виртуальных секунд:
+\begin{lstlisting}
+$ ./simics targets/x86-x58-ich10/viper-firststeps.simics
+simics> continue-seconds 3
+simcis> write-configuration new-chkpt
+\end{lstlisting}
+    \item Завершите сессию симуляции с помощью команды \texttt{quit}.
+    
+    \item Проверьте, что в текущем workspace была создана новая директория с именем \texttt{new-chkpt}.
+\begin{lstlisting}
+$ ls -1
+bin
+compiler.mk
+config.mk
+doc-cache
+GNUmakefile
+modules
+new-chkpt
+simics
+simics-gui
+targets    
+\end{lstlisting}
+В ней сохранено состояние всей симуляции на момент выполнения команды сохранения.
+    \item Запустите пустую сессию Simics, без загрузки каких-либо сценариев:
+\begin{lstlisting}
+$ ./simics
+\end{lstlisting}
+
+\item Загрузите точку сохранения с помощью команды \texttt{read-configuration}:
+\begin{lstlisting}
+simcis> read-configuration new-chkpt
+\end{lstlisting}
+В результате состояния симуляции будет эквивалентно тому, что она имела на момент создания точки.
+\item Продолжите исполнение симуляции с помощью \texttt{continue} и убедитесь, что загрузка системы продолжается корректно.
+\end{itemize*}
+
 
 
 % \section{Задания}
@@ -211,6 +249,9 @@ power management:
 \item Определите все отличия в параметрах аппаратных средств гостевой и хозяйской систем, используемых в данной работе. Какие средства могут быть использованы для обнаружения различий?
 \item Сравните скорость течения виртуального времени, сообщаемого симуляцией, и настоящего времени. Чем, по-вашему, вызваны наблюдаемые различия?
 \item Попытайтесь удалить \emph{все} файлы внутри симуляции. Каким образом это действие скажется на хозяйской системе? Перезапустите симуляцию. Что произошло с удалёнными файлами?
+
+\item Придумайте сценарии применения точек сохранения симуляции а практике разработки ПО и аппаратных средств с помощью симуляторов.
+
 \end{enumerate*}
 
 \iftoggle{webpaper}{
