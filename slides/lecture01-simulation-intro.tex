@@ -43,7 +43,6 @@
 % A new command to mark not done places
 \newcommand{\todo}[1][Напиши меня]{{\color{red}TODO\ #1}}
 
-
 \title{Компьютерная симуляция }
 % \subtitle{Курс «Программное моделирование вычислительных систем»}
 \subject{Лекция}
@@ -52,8 +51,6 @@
 \pgfdeclareimage[height=0.5cm]{intel-logo}{../images/intel.png}
 \logo{\pgfuseimage{intel-logo}}
 
-
-\typeout{Copyright 2014 Grigory Rechistov}
 
 \usetheme{Berlin}
 \setbeamertemplate{navigation symbols}{}%remove navigation symbols
@@ -68,6 +65,8 @@
 \tableofcontents
 \end{frame} 
 
+\section{Знакомство}
+
 \begin{frame}{Обо мне}
 
 \raggedleft \includegraphics[height=0.3\textheight]{./grigory-rechistov}
@@ -75,38 +74,39 @@
 \begin{itemize}
 \item Закончил МФТИ в 2010 г.
 \item Защитил диссертацию к.т.н в 2013 г.
-\item Работаю в Московском отделении Intel 
-\item Интересы: симуляция, образование, спорт
-
+\item Работаю в Московском отделении Intel.
+\item Интересы: симуляция, образование, спорт.
 \end{itemize}
-
-
 \end{frame} 
+
+\begin{frame}{О вас}
+
+Поднимите руки те, кто знаком с\pause
+\begin{enumerate}
+\item Языком Си.\pause
+\item Linux.\pause
+\item English.\pause
+\item Архитектурой ЭВМ.\pause
+\item Python.\pause
+\item Make.\pause
+\item SVN/Git.\pause
+\item VirtualBox, Qemu, Bochs, VMWare.
+\end{enumerate}
+
+\end{frame}
 
 \begin{frame}{Почему симуляция актуальна для \emph{вас}?}
 
 \begin{enumerate}
-\item Это интересно --- как работают компьютеры внутри!
-\item Помогает стать лучшим программистом --- почему код работает именно так, а не иначе (даёт ответы на загадки необъяснимых падений, плохой производительности)
-\item Знания востребованы работодателями --- HPC, embedded, gaming, ОС \dots
+\item Это интересно — как работают компьютеры внутри!
+\item Помогает стать лучшим программистом — почему код работает именно так, а не иначе (даёт ответы на загадки необъяснимых падений, плохой производительности).
+\item Знания востребованы работодателями — HPC, embedded, gaming, ОС \dots
 \item Многие алгоритмы/идеи симуляции являются общими для всей области CS, в т.ч. компиляции, ОС, прикладного ПО.
 \end{enumerate}
 
 \end{frame} 
 
-\begin{frame}{Опрос}
-Кто из вас знаком с
-
-\begin{enumerate}
-\item Архитектурой ЭВМ?
-\item Компиляторами?
-\item Make
-\item Python
-\end{enumerate}
-
-\end{frame}
-
-\section{Обзор}
+\section{Кратко о симуляции}
 
 \begin{frame}{Место симуляции в области Computer Science}
 
@@ -114,13 +114,13 @@
 
 \begin{tikzpicture}[>=latex, font=\small]
 
-\begin{scope}[minimum width = 8cm, node distance = 0.2cm, inner sep=1pt]
+\begin{scope}[minimum width = 8cm, node distance = 0.2cm, inner sep=2pt]
 
 \node[draw, ] (schematics) {Схемотехника};
 \node[draw, above = of schematics] (digital) {Цифровая электроника};
 \node[draw, above = of digital] (rtl-design) {Проектирование микросхем};
 \node[draw, above = of rtl-design] (transactions) {Разработка стандартов передачи данных};
-\node[draw, above = of transactions] (simulation) {Симуляция};
+\node[draw, thick, above = of transactions] (simulation) {\bfseries Симуляция};
 \node[draw, above = of simulation] (firmware) {Firmware};
 \node[draw, above = of firmware] (oses) {Операционные системы};
 \node[draw, above = of oses] (drivers) {Драйверы};
@@ -133,81 +133,43 @@
 
 \end{frame}
 
-\section{Фрактал абстракций цифровой техники}
+\begin{frame}{Wind River\textsuperscript{\textregistered}~Simics}
+\raggedleft \includegraphics[height=0.3\textheight]{./simics-logo}
 
-\begin{frame}{КМОП-транзистор}
-\begin{tikzpicture}[>=latex]
-
-\draw[fill=blue!10] (0,0) rectangle (10,-2);
-\node at (5,-1.5) {n-подложка (Si)};
-
-\draw[fill=red!10] (0,0) rectangle (4, -1);
-\node at (2,-0.5) {p-исток};
-
-\draw[fill=red!10] (6,0) rectangle (10, -1);
-\node at (8,-0.5) {p-сток};
-
-\draw[fill=black!10] (3,0) rectangle (7, 0.5);
-\node at (5,0.25) {Оксид};
-
-\draw[fill=green!10] (3,0.5) rectangle (7, 1.5);
-\node at (5, 1) {Затвор (металл)};
-
-\draw[-o] (1,0) -- (1, 1);
-\draw[-o] (9,0) -- (9, 1);
-\draw[-o] (5,1.5) -- (5, 2.5);
-
-\end{tikzpicture}
-\end{frame}
-
-
-\begin{frame}{Цифровые вентили}
-\begin{circuitikz} 
-\draw
-(0,0)       node[nigfete, ] (nigfete) {}
-(nigfete.D) node[pigfete, anchor=S] (pigfete) {}
-
-
-(pigfete.G) (nigfete.G) {};
-
-
-\end{circuitikz} 
+\begin{itemize}
+\item Симулятор виртуальных платформ.
+\item Фреймворк для создания моделей новых цифровых устройств.
+\item Позволяет моделировать: устройства, узлы, компьютеры, сети компьютеров.
+\end{itemize}
 
 \end{frame}
 
-\begin{frame}{Центральный процессор: конвеер}
-\begin{tikzpicture}[>=latex]
-
-
-\end{tikzpicture}
-
+\begin{frame}{Что будет дальше}
+\begin{itemize}
+\item День 1: использование Simics.
+\item День 2: как устроены модели процессоров и периферии.
+\item День 3: написание модели процессора OpenRISC 1000.
+\end{itemize}
 \end{frame}
 
-\begin{frame}{Центральный процессор: минимальная обвязка}
-\begin{tikzpicture}[>=latex]
+\begin{frame}{Цели занятий}
+\begin{itemize}
+\item Научиться пользоваться Simics как пользователи.\pause
+\item Научиться пользоваться Simics как создатели новых моделей.\pause
+\item Заглянуть в устройство компьютера.\pause
+\item To have fun!
+\end{itemize}
 
-\end{tikzpicture}
 \end{frame}
-
-\begin{frame}{Платформа компьютерной системы}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
-\end{frame}
-
-\begin{frame}{Сеть компьютерных систем}
-\begin{tikzpicture}[>=latex]
-
-\end{tikzpicture}
-\end{frame}
-
 
 
 \section{Литература}
 
 \begin{frame}[allowframebreaks]{Литература}
 \begin{thebibliography}{99}
-    \bibitem{simbook} Основы программного моделирования ЭВМ. Учебное пособие / Г. Речистов, А. Иванов, П. Шишпор, Н. Щелкунов, Д. Гаврилов, В. Пентковский. — Издательство МФТИ, дек. 2012. — ISBN 978-5-7417-0469-1
+    \bibitem{simbook} Программное моделирование вычислительных систем (лекции) \url{http://atakua.doesntexist.org/public/archive/simcourse/simulation-lectures-latest.pdf}
+	
+	\bibitem{practicum} Лабораторный практикум по программному моделированию.  \url{http://atakua.doesntexist.org/public/archive/simcourse/simulation-practicum-latest.pdf}
 
 \end{thebibliography}
 \end{frame}
@@ -225,7 +187,9 @@
 
 \vfill
 
-\tiny{\textit{Замечание}: все торговые марки и логотипы, использованные в данном материале, являются собственностью их владельцев. Представленная точка зрения отражает личное мнение автора. Материалы доступны по лицензии Creative Commons Attribution-ShareAlike (Атрибуция — С сохранением условий) 4.0 весь мир (в т.ч. Россия и др.). Чтобы ознакомиться с экземпляром этой лицензии, посетите \url{http://creativecommons.org/licenses/by-sa/4.0/}}
+\tiny{\textit{Замечание}: все торговые марки и логотипы, использованные в данном материале, являются собственностью их владельцев. Представленная точка зрения отражает личное мнение автора.
+%Материалы доступны по лицензии Creative Commons Attribution-ShareAlike (Атрибуция — С сохранением условий) 4.0 весь мир (в т.ч. Россия и др.). Чтобы ознакомиться с экземпляром этой лицензии, посетите \url{http://creativecommons.org/licenses/by-sa/4.0/}
+}
 
 \end{frame}
 
