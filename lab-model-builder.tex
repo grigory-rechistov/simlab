@@ -141,12 +141,27 @@ static const sample_interface_t sample_iface = {
 SIM_register_interface(class, SAMPLE_INTERFACE, &sample_iface);
 \end{lstlisting}
 
-Здесь \texttt{sample_iface} --- структура из указателей на функции, которая передаётся функции \texttt{SIM_register_interface()}. \texttt{class} --- тот же самый класс, что был получен при регистрации класса, \texttt{SAMPLE_INTERFACE} --- строка\footnote{По соглашениям строки с названиями интерфейсов хранятся в \#define'ах, названных из заглавных букв имени, т.е. \texttt{SAMPLE_INTERFACE} эквивалентно \texttt{"sample_interface"}.} с именем интерфейса.
+Здесь \texttt{sample_iface} --- структура из указателей на функции, которая передаётся функции \texttt{SIM_register_interface()}. В данном случае в ней содержится только один указатель --- \texttt{simple_method}.  \texttt{class} --- тот же самый класс, что был получен при регистрации класса, \texttt{SAMPLE_INTERFACE} --- строка\footnote{По соглашениям строки с названиями интерфейсов хранятся в \#define'ах, названных из заглавных букв имени, т.е. \texttt{SAMPLE_INTERFACE} эквивалентно \texttt{"sample_interface"}.} с именем интерфейса.
 
 \section{Ход работы}
 
-\todo
-% \section{}
+\begin{itemize*}
+    \item Соберите модуль \texttt{sample-device-c}.
+    \item Измените код внутри модуля так, чтобы поменять имя класса на \texttt{mydevice}, а имя модуля --- на \texttt{mymodule}.
+    \item Добавьте атрибут \texttt{counter}, содержащий значение целого типа.
+    \item Измените логику работы \texttt{simple_method()} так, чтобы она изменяла значение \texttt{counter}, например, монотонно увеличивала его.
+    \item Загрузите Simics, затем подгрузите модуль \texttt{mymodule}. 
+    \item С помощью команды \texttt{help mydevice} проверьте, что новый класс действительно предоставляет все интерфейсы и атрибуты.
+    \item Создайте объект класса \texttt{mydevice} c именем \texttt{dev0}\footnote{О создании конфигураций рассказывается в следующей главе}.
+    \item Вызовите метод simple_method из устройства с помощью команды
+\begin{lstlisting}
+simics> @conf.dev0.iface.sample_iface.simple_method(3)
+\end{lstlisting}
+
+\item Проверьте, что значение атрибута \texttt{counter} изменилось.
+
+\end{itemize*}
+
 
 \section{Контрольные вопросы}
 
