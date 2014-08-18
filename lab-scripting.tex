@@ -51,6 +51,68 @@ $
 
 \section{Переменные окружения}
 
+В процессе работы симуляции пользовательские данные можно хранить в переменных. В Simics переменные имеют имена, начинающиеся со знака доллара. Они могут хранить числа, строки, булевы значения и списки. Как и во многих других скриптовых языках, тип переменных определяется динамически. 
+
+Пример операций с переменными:
+\begin{lstlisting}
+simics> $a
+No CLI variable "a"
+simics> $a = 2
+simics> $a
+2
+simics> $a = "text value"
+simics> $a
+"text value"
+simics> $a =(3+4)/5
+simics> $a
+1
+simics> $a =(3+4)/5.0
+simics> $a
+1.4
+simics> $a = [1,2,3]
+simics> $a
+[1, 2, 3]
+simics> $a = TRUE
+simics> $a
+TRUE
+simics> defined a
+TRUE
+simics> defined b
+FALSE
+\end{lstlisting}
+
+Очень часто переменные используются как элементы конфигурации гостевой платформы при её создании. Фиксированного соглашения на их именование нет; однако, традиционно \texttt{\$cpu_class} содержит имя процесссора, \texttt{\$system} --- имя создаваемого компонента верхнего уровня (т.е. материнской платы), \texttt{\$disk} --- путь к образу диска и т.д.
+
+Для того, чтобы увидеть все определённые переменные, используется команда \texttt{list-variables}. Например, для скрипта \texttt{viper-busybox.simics} определены десятки переменных, используемых для первоначальной конфигурации:
+
+\begin{lstlisting}
+simics> list-variables
+$apic_freq_mhz           = 133
+$bios                    = "seabios-simics-x58-ich10-sata-1.6.3-20131111.bin"
+$break_on_reboot         = TRUE
+$cdrom                   = "viper.cdrom"
+$connect_real_network    = TRUE
+$connect_usb_tablet      = FALSE
+$console                 = "viper.console"
+$cpi                     = 1
+$cpu                     = ["viper.mb.cpu0"]
+$cpu_class               = "core-i7"
+$create_network          = TRUE
+$create_processor        = "create-processor-core-i7"
+$dhcp_pool_ip            = "10.10.0.100"
+$dhcp_pool_size          = 100
+$dimm                    = "viper.mb.memory"
+$disk                    = "viper.disk"
+$disk_size               = 20496236544
+$efi                     = FALSE
+$enter_in_boot_menu      = TRUE
+$eth_cnt                 = "eth_slot"
+$eth_comp                = "viper.mb.sb"
+$eth_link                = "ethernet_switch0"
+$freq_mhz                = 2000
+...
+\end{lstlisting}
+
 \section{Команды}
 
 \section{Python}
@@ -81,7 +143,8 @@ $
 \begin{enumerate*}
 \item Перечислите три способа ввода команд в Simics.
 \item Для каких нужд могут понадобится полностью неинтерактивные сценарии симуляции? Приведите несколько примеров.
-\item 
+\item Найдите, откуда появляются значения всех переменных из сценария \texttt{viper-busybox} при условии, что их не задали в командной строки или вручную.
+\item Придумайте способ прочитать значение некоторой переменной из модели устройства. Почему не существует прямого API для выполнения подобной операции?
 \end{enumerate*}
 
 \iftoggle{webpaper}{
