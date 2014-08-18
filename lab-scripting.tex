@@ -45,8 +45,21 @@ $
 
 \item Наконец, команды можно указывать прямо \textit{в опциях командной строки} Simics, с ключом \texttt{-e}. При этом, если в команде есть специальные символы, интерпретируемые самой командной оболочкой операционной системы, то их приходится <<прятать>> с помощью кавычек. Для Unix Shell среди них содержатся символы пробела, доллара, одинарные и двойные кавычки, обратные слеши.
 
-\todo
+Тот же самый файл сценария \texttt{1.simics} выдаст другое значение для переменной \texttt{a}, если её значение переопределить в командной строке:
 
+\begin{lstlisting}
+$ ./simics -e '$a="_changed_"' 1.simics
+Wind River Simics 4.8 (build 4561 linux64) Copyright 2010-2014 Intel Corporation
+
+Use of this software is subject to appropriate license.
+Type 'copyright' for details on copyright and 'help' for on-line documentation.
+
+Variable a is _changed_
+About to exit
+$
+\end{lstlisting}
+
+Заметим, что, в отличие от многих утилит Linux, порядок аргументов командной строки Simics важен --- он определяет порядок их исполнения. Все принимаемые флаги можно увидеть, исполнив \texttt{simics -help}.
 \end{enumerate*}
 
 \section{Переменные окружения}
