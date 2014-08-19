@@ -39,18 +39,20 @@
 \usepackage{underscore}
 \usepackage{amsthm}
 
+\usepackage{ulem} % for strikethrough
+\usepackage{bytefield} % for bitefield
+
 % A new command to mark not done places
 \newcommand{\todo}[1][Напиши меня]{{\color{red}TODO\ #1}}
 
 
-\title{Краткое введение в OpenRISC 1000}
+\title{Моделирование OpenRISC 1000}
 % \subtitle{Курс «Программное моделирование вычислительных систем»}
 \subject{Лекция}
 \author[Григорий Речистов]{Григорий Речистов \\ \small{\href{mailto:grigory.rechistov@intel.com}{grigory.rechistov@intel.com}}}
-\date{\today}
+\date{26-28 августа 2014 г.}
 \pgfdeclareimage[height=0.5cm]{intel-logo}{../images/intel.png}
 \logo{\pgfuseimage{intel-logo}}
-
 
 \typeout{Copyright 2014 Grigory Rechistov}
 
@@ -68,27 +70,210 @@
 \end{frame} 
 
 
-\section{Обзор}
+\section{Обзор \texttt{or1k}}
 
-\begin{frame}{Что такое OpenRISC}
+\begin{frame}{Что такое OpenRISC 1000}
 
-\todo
+\begin{itemize}
+	\item Модульная архитектура цифровой системы с поддержкой сообщества OpenCores.
+	\item Спецификация центрального процессора/SoC.
+	\item Реализована в симуляторах, VHDL, FPGA и кремнии.
+	\item Поддерживается Linux, Glibc и др.
+\end{itemize}
 
 \end{frame}
 
-\begin{frame}{Почему OpenRISC для симуляции}
-
+\begin{frame}{Почему OpenRISC 1000 для симуляции}
+\begin{itemize}\pause
+\item\only<2>{MIPS всем надоел.}\only<3->{\sout{MIPS всем надоел.}}
+\item<4-> Модульная структура — много необязательных частей.
+\item<4-> Простая архитектура.
+\item<5-> Но не \textit{слишком} простая.
+\end{itemize}
 \end{frame}
 
 \begin{frame}{ISA}
+\centering
+\begin{tikzpicture}[font=\small, node distance = 0.5cm]
+    \node[draw, ellipse] (ORBIS32) {ORBIS32};
+    \node[draw, ellipse, right = of ORBIS32] (ORBIS64) {ORBIS64};
+    \node[draw, ellipse, below = of ORBIS32] (ORFPX32) {ORFPX32};
+    \node[draw, ellipse, below = of ORBIS64] (ORFPX64) {ORFPX64};
+    \node[draw, ellipse, below = of ORFPX64] (ORVDX64) {ORVDX64};
+    \node[draw, ellipse, fit = (ORBIS32) (ORBIS64) (ORFPX32) (ORFPX64) (ORVDX64)] {};
+\end{tikzpicture}
 
-\includegraphics[width=0.8\textwidth]{./or1k-isa}
-
-% \begin{tikzpicture}[>=latex]
-
-% \end{tikzpicture}
 \end{frame}
 
+\begin{frame}{Регистры}
+\bytefieldsetup{bitwidth=0.07cm, endianness = big}
+\begin{columns}
+	\begin{column}{0.5\textwidth}
+		\begin{bytefield}[]{32}
+			\bitheader{31, 0} \\
+			\bitbox{32}{PC} \\
+		\end{bytefield}
+
+		\begin{bytefield}[]{64}
+			\bitheader{63, 0} \\
+			\bitbox{64}{GPR0} \\
+			\bitbox{64}{\dots} \\
+			\bitbox{64}{GPR31} \\
+		\end{bytefield}
+	\end{column}
+
+	\begin{column}{0.5\textwidth}
+		\begin{bytefield}[]{32}
+			\bitheader{31, 0} \\
+			\bitbox{32}{VR} \\
+			\bitbox{32}{UPR} \\
+			\bitbox{32}{CPUCFGR} \\
+			\bitbox{32}{\dots} \\
+			\bitbox{32}{ESR15} \\
+		\end{bytefield}
+	\end{column}
+\end{columns}
+
+\end{frame}
+
+\begin{frame}{Что ещё есть}
+
+\begin{itemize}
+\item Исключения.
+\item TLB
+\item MMU.
+\item Cache.
+\item PIC.
+\item Tick timer.
+\item PCU, Debug, PMU \dots
+\end{itemize}
+
+\end{frame}
+
+% \begin{frame}{}
+
+% \end{frame}
+
+\section{Ход работы}
+
+\begin{frame}[fragile]{Получение исходников модели}
+\begin{verbatim}
+$ git clone user@host:/path wrkspc
+Cloning into 'wrkspc'...
+done.
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]{Создание workspace}
+
+\begin{footnotesize}
+\begin{verbatim}
+$ /opt/simics/simics-4.6/simics-4.6.112/bin/workspace-setup wrkspc
+Workspace created successfully
+$ cd wrkspc
+\end{verbatim}
+\end{footnotesize}
+
+\end{frame}
+
+\begin{frame}{Сборка}
+
+\texttt{\$ make}
+
+\end{frame}
+
+\begin{frame}[fragile]{Юнит-тест}
+
+\begin{verbatim}
+$ ./bin/test-runner
+...
+Ran 3 tests in 3 suites in 2.171517 seconds.
+All tests completed successfully.
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]{Структура кода}
+\begin{tiny}
+\begin{verbatim}
+$ ls -1 modules/or1k/
+Makefile
+or1k-cycle.c
+or1k-cycle.h
+or1k-exec.c
+or1k-exec.h
+or1k-frequency.c
+or1k-frequency.h
+or1k-memory.c
+or1k-memory.h
+or1k-queue.c
+or1k-queue.h
+or1k-step.c
+or1k-step.h
+or1k.c
+or1k.h
+commands.py
+event-queue-types.h
+event-queue.c
+event-queue.h
+\end{verbatim}
+\end{tiny}
+
+\end{frame}
+
+\begin{frame}[fragile]{Атрибуты}
+
+\begin{tiny}
+\begin{verbatim}
+simics> api-help SIM_register_typed_attribute
+Help on API keyword "SIM_register_typed_attribute":
+
+// defined in simics/base/conf-object.h
+#include <simics/device-api.h>    // in C/C++
+// always available in DML
+
+int SIM_register_typed_attribute(conf_class_t * NOTNULL cls, const char * NOTNULL name, 
+	get_attr_t get_attr, lang_void *user_data_get, set_attr_t set_attr, lang_void
+    *user_data_set, attr_attr_t attr, const char *type, const char *idx_type, const char *desc);
+
+// available in Python
+\end{verbatim}
+\end{tiny}
+
+\end{frame}
+
+\begin{frame}[fragile]{Интерфейсы}
+
+\begin{tiny}
+\begin{verbatim}
+simics> api-help SIM_register_interface
+Help on API keyword "SIM_register_interface":
+
+// defined in simics/base/conf-object.h
+#include <simics/device-api.h>    // in C/C++
+// always available in DML
+
+int SIM_register_interface(conf_class_t * NOTNULL cls, const char * NOTNULL name, 
+const interface_t * NOTNULL iface);
+
+// available in Python
+\end{verbatim}
+\end{tiny}
+\end{frame}
+
+\begin{frame}{Задание}
+
+\begin{enumerate}
+\item Выбрать часть функциональности, требующую реализации.
+\item Спланировать процесс реализации.
+\item Реализовать в коде.
+\item Добиться успешной сборки.
+\item Написать юнит-тест.
+\item Добиться успешного завершения юнит-теста.
+\item GOTO 1.
+\end{enumerate}
+
+\end{frame}
 
 
 \section{Литература}
@@ -96,7 +281,10 @@
 \begin{frame}[allowframebreaks]{Литература}
 \begin{thebibliography}{99}
     \bibitem{simbook} Основы программного моделирования ЭВМ. Учебное пособие / Г. Речистов, А. Иванов, П. Шишпор, Н. Щелкунов, Д. Гаврилов, В. Пентковский. — Издательство МФТИ, дек. 2012. — ISBN 978-5-7417-0469-1
-
+	\bibitem{or1k-isa-spec}  Open Cores OpenRISC 1000 Architecture Manual. Architecture Version 1.0 Document Revision 0. — 2012. — URL: \url{http://opencores.org/websvn,filedetails?repname=openrisc&path=/openrisc/trunk/docs/openrisc-arch-1.0-rev0.pdf}
+	\bibitem{proc-integration} Processor Model Integration Guide 4.6 / Wind River. — 2014.
+	\bibitem{model-builder} Simics Model Builder User Guide 4.6 / Wind River. — 2014.
+	
 \end{thebibliography}
 \end{frame}
 
