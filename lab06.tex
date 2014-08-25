@@ -95,7 +95,7 @@ OpenRISC 1000 --- дизайн процессора, построенный по
     \item прочие.
 \end{itemize}
 
-\section{Кодовая база Simics для создания моделей процессоров}
+\section[Кодовая база моделей процессоров]{Кодовая база Simics для создания моделей процессоров}
 
 Основа модели ЦПУ --- код \texttt{sample-risc}, модифицированный для нужд учебного проекта:
 \begin{itemize}
@@ -103,14 +103,107 @@ OpenRISC 1000 --- дизайн процессора, построенный по
     \item декодер упрощён до одной инструкции.
 \end{itemize}
 
-Основа модели таймера --- sample-device.
+Конфигурация платформы (ЦПУ, память, опционально таймер) --- основана на сценарии \texttt{cosim}.
 
-Конфигурация платформы (ЦПУ, память, опционально таймер) --- основана на сценарии \texttt{queues-in-cosimulator.simics}.
+\section[Кодовая база моделей устройств]{Кодовая база Simics для создания моделей периферийных устройств}
+
+Основа для моделей периферийных устройств --- код \texttt{sample-device-c} и \texttt{sample-timer-device}, переименованный в \texttt{tick-device}.
+
+\section{Совместная симуляция процессоров и периферийных устройств}
+
+Следующий пример работы с сессией Simics иллюстрирует совместную работу исполняющих (процессоры) и неисполняющих устройств в симуляции.
+
+\begin{lstlisting}
+simics> phys_mem0.map
+   Base  Object      Fn  Offset   Length
+----------------------------------------
+0x00000  ram0         0     0x0  0x10000
+    width 8192 bytes
+0x00100  joy0         0     0x0     0x10
+    width 8 bytes
+0x00110  joy1         0     0x0     0x10
+    width 8 bytes
+0x08000  test0        0     0x0   0x8000
+0x10000  tick0:regs         0x0      0x8
+    width 2 bytes
+
+simics> tick0->irq_dev
+["chip0", "EXTERNAL_INTERRUPT"]
+\end{lstlisting}
+
+tick0 — это периодический таймер, chip0 - центральный процессор. Они соединены через порт EXTERNAL_INTERRUPT, кроме того, регистры tick0 отображены в физическую память, начиная с адреса 0x10000.
+
+\begin{lstlisting}
+simics> log-level 4
+New global log level: 4
+simics> phys_mem0.write address = 0x10000 value = 0 -b size = 2
+[tick0 info] Write to register regs.counter (addr 0x10000) <- 0
+simics> phys_mem0.write address = 0x10002 value = 0 -b size = 2
+[tick0 info] Write to register regs.reference (addr 0x10002) <- 0
+simics> phys_mem0.write address = 0x10002 value = 100 -b size = 2
+[tick0 info] Write to register regs.reference (addr 0x10002) <- 0x64
+simics> peq
+   Step  Object      Description
+
+  Cycle  Object      Description
+      0  sim         Time Quantum End
+ 500001  cosim_cell  sync_report
+1000000  cosim_cell  sync_block
+\end{lstlisting}
+Очередь событий не содержит архитектурных событий, только псевдособытия симулятора.
+
+\begin{lstlisting}
+simics> phys_mem0.write address = 0x10004 value = 2 -b size = 2
+[tick0 info] Write to register regs.step (addr 0x10004) <- 0x2
+[tick0 info] step updated
+[tick0 info] reposting event to 200 cycles ahead
+simics> peq
+   Step  Object      Description
+
+  Cycle  Object      Description
+      0  sim         Time Quantum End
+    200  tick0       reference_reached
+ 500001  cosim_cell  sync_report
+1000000  cosim_cell  sync_block
+\end{lstlisting}
+После настройки регистров в очереди событий появилось событие таймера  reference_reached.
+
+\begin{lstlisting}
+simics> log-level 1
+New global log level: 1
+simics> continue-cycles 199
+[chip0] v:0x031c p:0x031c  nop
+simics> peq
+  Step  Object      Description
+
+ Cycle  Object      Description
+     1  tick0       reference_reached
+499802  cosim_cell  sync_report
+999801  sim         Time Quantum End
+999801  cosim_cell  sync_block
+\end{lstlisting}
+Расстояние до события таймера уменьшается.
+
+\begin{lstlisting}
+simics> continue-cycles 10
+[tick0 info] reference_reached is fired!
+[chip0 info] EXTERNAL_INTERRUPT raised.
+[chip0 info] EXTERNAL_INTERRUPT lowered.
+[chip0] v:0x0344 p:0x0344  nop
+simics> peq
+  Step  Object      Description
+
+ Cycle  Object      Description
+499792  cosim_cell  sync_report
+999791  sim         Time Quantum End
+999791  cosim_cell  sync_block
+
+\end{lstlisting}
+Таймер отработал, а процессор получил прерывание.
 
 \section{Тестирование моделей}
 
-Для тестирования корректности моделирования отдельных инструкций применяется юнит-тестирование на основе фреймворка test-runner. Для проверки последовательностей команд код гостевой код может быть написан вручную в машинных кодах или же с помощью GNU toolchain~\cite{or1k-toolchain}.
-
+Для тестирования корректности моделирования отдельных инструкций применяется юнит-тестирование на основе фреймворка \texttt{test-runner}. Для проверки последовательностей команд гостевой код может быть написан вручную в машинных кодах OpenRISC 1000 или же с помощью GNU toolchain~\cite{or1k-toolchain}.
 
 \section{Порядок работы}
 
